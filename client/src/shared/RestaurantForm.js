@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles } from '@mui/styles';
 import { Box, Button, Stack, TextField, Typography } from '@mui/material';
 
-
+import {
+    validateName, validateDescription, validateCity, validateState,
+    validateCountry, validateImage, validateTel, validateEmail
+} from '../validators/validateRestaurant';
+import { useInputState } from '../hooks/useInputState';
 
 const useStyles = makeStyles(theme => ({
     background: {
@@ -34,10 +38,126 @@ const useStyles = makeStyles(theme => ({
 function RestaurantForm() {
     const styles = useStyles();
 
+    const {
+        enteredValue: name,
+        inputIsValid: nameIsValid,
+        inputHasError: nameHasError,
+        errorMessage: nameErrorMessage,
+        handleChange: handleNameChange,
+        handleBlur: handleNameBlur,
+        reset: resetName
+    } = useInputState('', validateName);
+
+    const {
+        enteredValue: description,
+        inputIsValid: descriptionIsValid,
+        inputHasError: descriptionHasError,
+        errorMessage: descriptionErrorMessage,
+        handleChange: handleDescriptionChange,
+        handleBlur: handleDescriptionBlur,
+        reset: resetDescription
+    } = useInputState('', validateDescription);
+
+    const {
+        enteredValue: city,
+        inputIsValid: cityIsValid,
+        inputHasError: cityHasError,
+        errorMessage: cityErrorMessage,
+        handleChange: handleCityChange,
+        handleBlur: handleCityBlur,
+        reset: resetCity
+    } = useInputState('', validateCity);
+
+    const {
+        enteredValue: state,
+        inputIsValid: stateIsValid,
+        inputHasError: stateHasError,
+        errorMessage: stateErrorMessage,
+        handleChange: handleStateChange,
+        handleBlur: handleStateBlur,
+        reset: resetState
+    } = useInputState('', validateState);
+
+    const {
+        enteredValue: country,
+        inputIsValid: countryIsValid,
+        inputHasError: countryHasError,
+        errorMessage: countryErrorMessage,
+        handleChange: handleCountryChange,
+        handleBlur: handleCountryBlur,
+        reset: resetCountry
+    } = useInputState('', validateCountry);
+
+    const {
+        enteredValue: image,
+        inputIsValid: imageIsValid,
+        inputHasError: imageHasError,
+        errorMessage: imageErrorMessage,
+        handleChange: handleImageChange,
+        handleBlur: handleImageBlur,
+        reset: resetImage
+    } = useInputState('', validateImage);
+
+    const {
+        enteredValue: tel,
+        inputIsValid: telIsValid,
+        inputHasError: telHasError,
+        errorMessage: telErrorMessage,
+        handleChange: handleTelChange,
+        handleBlur: handleTelBlur,
+        reset: resetTel
+    } = useInputState('', validateTel);
+
+    const {
+        enteredValue: email,
+        inputIsValid: emailIsValid,
+        inputHasError: emailHasError,
+        errorMessage: emailErrorMessage,
+        handleChange: handleEmailChange,
+        handleBlur: handleEmailBlur,
+        reset: resetEmail
+    } = useInputState('', validateEmail);
+
+    const formIsValid = nameIsValid && descriptionIsValid && cityIsValid
+        && stateIsValid && countryIsValid && imageIsValid && telIsValid && emailIsValid;
+
+    const clearForm = () => {
+        resetName();
+        resetDescription();
+        resetCity();
+        resetState();
+        resetCountry();
+        resetImage();
+        resetTel();
+        resetEmail();
+    }
+
+    const handleSubmit = e => {
+        e.preventDefault();
+
+        handleNameBlur();
+        handleDescriptionBlur();
+        handleCityBlur();
+        handleStateBlur();
+        handleCountryBlur();
+        handleImageBlur();
+        handleTelBlur();
+        handleEmailBlur();
+
+        if (!formIsValid) {
+            console.log('Form is not valid');
+            return;
+        }
+
+        console.log('Form is valid');
+
+        clearForm();
+    }
+
     return (
         <Box className={styles.background}>
             <Box sx={{ width: '25rem' }}>
-                <form>
+                <form onSubmit={handleSubmit}>
                     <Typography
                         variant='h4'
                         sx={{ mb: 2 }}>
@@ -45,9 +165,19 @@ function RestaurantForm() {
                     </Typography>
                     <Stack spacing={2}>
                         <TextField
-                            label='Name' />
+                            label='Name'
+                            value={name}
+                            onChange={handleNameChange}
+                            onBlur={handleNameBlur}
+                            error={nameHasError}
+                            helperText={nameHasError && nameErrorMessage} />
                         <TextField
                             label='Description'
+                            value={description}
+                            onChange={handleDescriptionChange}
+                            onBlur={handleDescriptionBlur}
+                            error={descriptionHasError}
+                            helperText={descriptionHasError && descriptionErrorMessage}
                             rows={3}
                             multiline />
                     </Stack>
@@ -57,11 +187,30 @@ function RestaurantForm() {
                         sx={{ mb: 2, mt: 3 }}>
                         Address
                     </Typography>
+
+                    {/*Incorporate a map to specify location*/}
                     <Stack spacing={2}>
                         <TextField
-                            label='City' />
+                            label='City'
+                            value={city}
+                            onChange={handleCityChange}
+                            onBlur={handleCityBlur}
+                            error={cityHasError}
+                            helperText={cityHasError && cityErrorMessage} />
                         <TextField
-                            label='State' />
+                            label='State'
+                            value={state}
+                            onChange={handleStateChange}
+                            onBlur={handleStateBlur}
+                            error={stateHasError}
+                            helperText={stateHasError && stateErrorMessage} />
+                        <TextField
+                            label='Country'
+                            value={country}
+                            onChange={handleCountryChange}
+                            onBlur={handleCountryBlur}
+                            error={countryHasError}
+                            helperText={countryHasError && countryErrorMessage} />
                     </Stack>
 
                     {/* MOVE THE IMAGE TO RIGHT SIDE 
@@ -72,7 +221,13 @@ function RestaurantForm() {
                         Image
                     </Typography>
                     <TextField
-                        label='Image url' fullWidth />
+                        label='Image url'
+                        value={image}
+                        onChange={handleImageChange}
+                        onBlur={handleImageBlur}
+                        error={imageHasError}
+                        helperText={imageHasError && imageErrorMessage}
+                        fullWidth />
 
                     <Typography
                         variant='h4'
@@ -81,14 +236,26 @@ function RestaurantForm() {
                     </Typography>
                     <Stack spacing={2}>
                         <TextField
-                            label='Telephone' />
+                            label='Telephone'
+                            type='number'
+                            value={tel}
+                            onChange={handleTelChange}
+                            onBlur={handleTelBlur}
+                            error={telHasError}
+                            helperText={telHasError && telErrorMessage} />
                         <TextField
-                            label='Email' />
+                            label='Email'
+                            value={email}
+                            onChange={handleEmailChange}
+                            onBlur={handleEmailBlur}
+                            error={emailHasError}
+                            helperText={emailHasError && emailErrorMessage} />
                     </Stack>
                     <Button
                         className={styles.submitBtn}
                         variant='contained'
-                        type='submit'>
+                        type='submit'
+                        disabled={!formIsValid}>
                         Submit
                     </Button>
                 </form>
