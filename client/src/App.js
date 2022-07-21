@@ -1,5 +1,9 @@
-import Header from './components/Header';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import RestaurantsList from './pages/RestaurantsList';
+import AddRestaurant from './pages/AddRestaurant';
 
 function App() {
   return (
@@ -7,11 +11,14 @@ function App() {
       <Header />
       <Routes>
         <Route path='/' element={<Navigate to='/home' replace />} />
-        <Route path='/home' element={<div>Home</div>} />
-        <Route path='/restaurants' element={<div>Restaurants</div>} />
-        <Route path='/restaurants/new' element={<div>Add Restaurant</div>} />
+        <Route path='/home' element={<Home />} />
+        <Route path='/restaurants' element={<RestaurantsList />} />
+        <Route path='/restaurants/new' element={<AddRestaurant />} />
+        <Route path='/about' element={<div>About Us</div>} />
+        <Route path='/contact' element={<div>Contact Us</div>} />
         <Route path='*' element={<div>Page not found</div>} />
       </Routes>
+      <Footer />
     </>
   );
 }
