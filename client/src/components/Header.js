@@ -9,7 +9,6 @@ import { Menu as MenuIcon } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
 
 
-
 function ElevationOnScroll({ children }) {
 
     const trigger = useScrollTrigger();
@@ -33,9 +32,8 @@ const useStyles = makeStyles(theme => ({
     },
     logo: {
         '&.MuiTypography-root': {
-            fontFamily: 'Pacifico',
-            color: theme.palette.primary.light,
-            fontSize: '2.5rem'
+            ...theme.typography.logo,
+            color: '#000'
         }
     },
     toolbarMargins: {
@@ -78,7 +76,9 @@ const useStyles = makeStyles(theme => ({
 const TABS = [
     { name: 'Home', route: '/home' },
     { name: 'Restaurants', route: '/restaurants' },
-    { name: 'Add Restaurant', route: '/restaurants/new' }
+    { name: 'Add Restaurant', route: '/restaurants/new' },
+    { name: 'About Us', route: '/about' },
+    { name: 'Contact Us', route: '/contact' }
 ];
 
 function Header() {
@@ -120,6 +120,7 @@ function Header() {
                             component={Link}
                             selected={tab === index}
                             className={styles.drawerItem}
+                            disableRipple
                             onClick={() => {
                                 setOpenDrawer(false);
                                 setTab(index);
@@ -151,7 +152,8 @@ function Header() {
                 className={styles.tab}
                 to={myTab.route}
                 component={Link}
-                label={myTab.name} />
+                label={myTab.name}
+                disableRipple />
         ))}
     </Tabs>
 
