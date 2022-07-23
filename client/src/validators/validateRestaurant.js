@@ -45,14 +45,6 @@ export const validateImage = image => {
     return errorMessage;
 }
 
-export const validateTel = tel => {
-    let errorMessage = checkRequired('Telephone', tel);
-    if (errorMessage) return errorMessage;
-
-    errorMessage = checkLength('Telephone', tel, 10, 15);
-    return errorMessage;
-}
-
 export const validateEmail = email => {
     let errorMessage = checkRequired('Email', email);
     if (errorMessage) return errorMessage;

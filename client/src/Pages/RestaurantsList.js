@@ -1,10 +1,12 @@
 import React from 'react';
 import { Typography } from '@mui/material';
+import { useSelector } from 'react-redux';
+
 import CardList from '../shared/CardList';
-import { restaurants } from '../helpers/restaurants';
 
 
 function RestaurantsList() {
+    const restaurants = useSelector(state => state.restaurants);
 
     return (
         <>

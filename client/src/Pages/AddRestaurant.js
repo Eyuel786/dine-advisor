@@ -1,10 +1,16 @@
 import React from 'react';
 import { Typography } from '@mui/material';
+import { useDispatch } from 'react-redux';
+
 import RestaurantForm from '../shared/RestaurantForm';
-
-
+import { restaurantsActions } from '../store';
 
 function AddRestaurant() {
+    const dispatch = useDispatch();
+
+    const addNewRestaurant = restaurant => {
+        dispatch(restaurantsActions.add({ restaurant }));
+    }
 
     return (
         <>
@@ -14,7 +20,8 @@ function AddRestaurant() {
                 gutterBottom>
                 Add a Restaurant
             </Typography>
-            <RestaurantForm />
+            <RestaurantForm
+                addNewRestaurant={addNewRestaurant} />
         </>
     );
 }

@@ -1,10 +1,11 @@
 import React from 'react';
 import { makeStyles } from '@mui/styles';
 import { Box, Button, Stack, TextField, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 import {
     validateName, validateDescription, validateCity, validateState,
-    validateCountry, validateImage, validateTel, validateEmail
+    validateCountry, validateImage, validateEmail
 } from '../validators/validateRestaurant';
 import { useInputState } from '../hooks/useInputState';
 
@@ -21,7 +22,7 @@ const useStyles = makeStyles(theme => ({
             borderRadius: '50px',
             color: '#fff',
             backgroundColor: theme.palette.primary.main,
-            margin: '2rem 0',
+            margin: '2rem 0 3rem',
             textTransform: 'none',
             height: '43px',
             padding: '20px',
@@ -35,8 +36,10 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function RestaurantForm() {
+function RestaurantForm(props) {
     const styles = useStyles();
+    const navigate = useNavigate();
+    const { addNewRestaurant } = props;
 
     const {
         enteredValue: name,
@@ -99,16 +102,6 @@ function RestaurantForm() {
     } = useInputState('', validateImage);
 
     const {
-        enteredValue: tel,
-        inputIsValid: telIsValid,
-        inputHasError: telHasError,
-        errorMessage: telErrorMessage,
-        handleChange: handleTelChange,
-        handleBlur: handleTelBlur,
-        reset: resetTel
-    } = useInputState('', validateTel);
-
-    const {
         enteredValue: email,
         inputIsValid: emailIsValid,
         inputHasError: emailHasError,
@@ -119,7 +112,7 @@ function RestaurantForm() {
     } = useInputState('', validateEmail);
 
     const formIsValid = nameIsValid && descriptionIsValid && cityIsValid
-        && stateIsValid && countryIsValid && imageIsValid && telIsValid && emailIsValid;
+        && stateIsValid && countryIsValid && imageIsValid && emailIsValid;
 
     const clearForm = () => {
         resetName();
@@ -128,7 +121,6 @@ function RestaurantForm() {
         resetState();
         resetCountry();
         resetImage();
-        resetTel();
         resetEmail();
     }
 
@@ -141,7 +133,6 @@ function RestaurantForm() {
         handleStateBlur();
         handleCountryBlur();
         handleImageBlur();
-        handleTelBlur();
         handleEmailBlur();
 
         if (!formIsValid) {
@@ -149,7 +140,10 @@ function RestaurantForm() {
             return;
         }
 
-        console.log('Form is valid');
+        addNewRestaurant({
+            name, description, city, state, country, image, email
+        });
+        navigate('/restaurants');
 
         clearForm();
     }
@@ -234,23 +228,14 @@ function RestaurantForm() {
                         sx={{ mb: 2, mt: 3 }}>
                         Contact Information
                     </Typography>
-                    <Stack spacing={2}>
-                        <TextField
-                            label='Telephone'
-                            type='number'
-                            value={tel}
-                            onChange={handleTelChange}
-                            onBlur={handleTelBlur}
-                            error={telHasError}
-                            helperText={telHasError && telErrorMessage} />
-                        <TextField
-                            label='Email'
-                            value={email}
-                            onChange={handleEmailChange}
-                            onBlur={handleEmailBlur}
-                            error={emailHasError}
-                            helperText={emailHasError && emailErrorMessage} />
-                    </Stack>
+                    <TextField
+                        label='Email'
+                        value={email}
+                        onChange={handleEmailChange}
+                        onBlur={handleEmailBlur}
+                        error={emailHasError}
+                        helperText={emailHasError && emailErrorMessage}
+                        fullWidth />
                     <Button
                         className={styles.submitBtn}
                         variant='contained'

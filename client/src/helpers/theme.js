@@ -34,13 +34,16 @@ export const theme = createTheme({
         },
         h4: {
             fontFamily: 'Raleway',
-            fontSize: '1.2rem',
+            fontSize: '1.3rem',
             fontWeight: 700
         },
         canvas: {
             backgroundColor: '#f4f4f8',
             minHeight: '100vh',
             padding: '1rem 6rem',
+        },
+        subtitle1: {
+            fontSize: '0.95rem',
         }
     }
 });

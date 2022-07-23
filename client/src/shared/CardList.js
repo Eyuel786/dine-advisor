@@ -56,45 +56,49 @@ function CardList({ restaurants }) {
     const styles = useStyles();
 
     return (
-        <Box className={styles.list}>
-            {restaurants.map(r => (
-                <Card
-                    key={r.id}
-                    elevation={0}
-                    className={styles.card}>
-                    <CardMedia
-                        image={r.image}
-                        component='img'
-                        alt={r.name}
-                        className={styles.cardImg} />
-                    <CardContent className={styles.cardContent}>
-                        <Typography
-                            className={styles.name}
-                            variant='h4'
-                            to={`/restaurants/${r.id}`}
-                            component={Link}
-                            gutterBottom>
-                            {r.name}
-                        </Typography>
-                        <Typography
-                            variant='subtitle1'>
-                            0 reviews
-                        </Typography>
-                        <Typography
-                            variant='subtitle1'>
-                            {r.location}
-                        </Typography>
-                        <Divider />
-                        <Typography
-                            sx={{ margin: '1rem 0' }}
-                            variant='body1'
-                            color='text.secondary'>
-                            {r.description}
-                        </Typography>
-                    </CardContent>
-                </Card>
-            ))}
-        </Box>
+        <>
+            {!!restaurants.length && <Box className={styles.list}>
+                {restaurants.map(r => (
+                    <Card
+                        key={r.id}
+                        elevation={0}
+                        className={styles.card}>
+                        <CardMedia
+                            image={r.image}
+                            component='img'
+                            alt={r.name}
+                            className={styles.cardImg} />
+                        <CardContent className={styles.cardContent}>
+                            <Typography
+                                className={styles.name}
+                                variant='h4'
+                                to={`/restaurants/${r.id}`}
+                                component={Link}
+                                gutterBottom>
+                                {r.name}
+                            </Typography>
+                            <Typography
+                                variant='subtitle1'>
+                                {`${r.city}, ${r.state}`}
+                            </Typography>
+                            <Typography
+                                variant='subtitle1'>
+                                0 reviews
+                            </Typography>
+                            <Divider />
+                            <Typography
+                                sx={{ margin: '1rem 0' }}
+                                variant='body1'
+                                color='text.secondary'>
+                                {r.description}
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                ))}
+            </Box>}
+            {!restaurants.length &&
+                <Typography>No restaurants found</Typography>}
+        </>
     );
 }
 
