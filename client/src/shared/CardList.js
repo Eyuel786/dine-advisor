@@ -1,12 +1,10 @@
 import React from 'react';
 import {
     Card, CardContent, CardMedia, Box,
-    Typography,
-    Divider,
-    Link
+    Typography, Divider,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-
+import { Link } from 'react-router-dom';
 
 
 const useStyles = makeStyles(theme => ({
@@ -42,12 +40,12 @@ const useStyles = makeStyles(theme => ({
         }
     },
     name: {
-        '&.MuiTypography-root': {
-            textDecoration: 'none',
-            cursor: 'pointer',
-            '&:hover': {
-                textDecoration: 'underline'
-            }
+        ...theme.typography.h4,
+        textDecoration: 'none',
+        color: '#000',
+        '&:hover': {
+            textDecoration: 'underline',
+            cursor: 'pointer'
         }
     }
 }));
@@ -69,14 +67,11 @@ function CardList({ restaurants }) {
                             alt={r.name}
                             className={styles.cardImg} />
                         <CardContent className={styles.cardContent}>
-                            <Typography
+                            <Link
                                 className={styles.name}
-                                variant='h4'
-                                to={`/restaurants/${r.id}`}
-                                component={Link}
-                                gutterBottom>
+                                to={`/restaurants/${r.id}`}>
                                 {r.name}
-                            </Typography>
+                            </Link>
                             <Typography
                                 variant='subtitle1'>
                                 {`${r.city}, ${r.state}`}

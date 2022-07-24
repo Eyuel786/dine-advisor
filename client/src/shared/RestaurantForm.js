@@ -39,7 +39,10 @@ const useStyles = makeStyles(theme => ({
 function RestaurantForm(props) {
     const styles = useStyles();
     const navigate = useNavigate();
-    const { addNewRestaurant } = props;
+    const {
+        addNewRestaurant, restaurant,
+        updateRestaurant, isEditing
+    } = props;
 
     const {
         enteredValue: name,
@@ -49,7 +52,7 @@ function RestaurantForm(props) {
         handleChange: handleNameChange,
         handleBlur: handleNameBlur,
         reset: resetName
-    } = useInputState('', validateName);
+    } = useInputState(restaurant && restaurant.name, validateName);
 
     const {
         enteredValue: description,
@@ -59,7 +62,7 @@ function RestaurantForm(props) {
         handleChange: handleDescriptionChange,
         handleBlur: handleDescriptionBlur,
         reset: resetDescription
-    } = useInputState('', validateDescription);
+    } = useInputState(restaurant && restaurant.description, validateDescription);
 
     const {
         enteredValue: city,
@@ -69,7 +72,7 @@ function RestaurantForm(props) {
         handleChange: handleCityChange,
         handleBlur: handleCityBlur,
         reset: resetCity
-    } = useInputState('', validateCity);
+    } = useInputState(restaurant && restaurant.city, validateCity);
 
     const {
         enteredValue: state,
@@ -79,7 +82,7 @@ function RestaurantForm(props) {
         handleChange: handleStateChange,
         handleBlur: handleStateBlur,
         reset: resetState
-    } = useInputState('', validateState);
+    } = useInputState(restaurant && restaurant.state, validateState);
 
     const {
         enteredValue: country,
@@ -89,7 +92,7 @@ function RestaurantForm(props) {
         handleChange: handleCountryChange,
         handleBlur: handleCountryBlur,
         reset: resetCountry
-    } = useInputState('', validateCountry);
+    } = useInputState(restaurant && restaurant.country, validateCountry);
 
     const {
         enteredValue: image,
@@ -99,7 +102,7 @@ function RestaurantForm(props) {
         handleChange: handleImageChange,
         handleBlur: handleImageBlur,
         reset: resetImage
-    } = useInputState('', validateImage);
+    } = useInputState(restaurant && restaurant.image, validateImage);
 
     const {
         enteredValue: email,
@@ -109,7 +112,7 @@ function RestaurantForm(props) {
         handleChange: handleEmailChange,
         handleBlur: handleEmailBlur,
         reset: resetEmail
-    } = useInputState('', validateEmail);
+    } = useInputState(restaurant && restaurant.email, validateEmail);
 
     const formIsValid = nameIsValid && descriptionIsValid && cityIsValid
         && stateIsValid && countryIsValid && imageIsValid && emailIsValid;
@@ -140,9 +143,17 @@ function RestaurantForm(props) {
             return;
         }
 
-        addNewRestaurant({
-            name, description, city, state, country, image, email
-        });
+        if (isEditing) {
+            updateRestaurant({
+                ...restaurant, name, description, city,
+                state, country, image, email
+            });
+        } else {
+            addNewRestaurant({
+                name, description, city,
+                state, country, image, email
+            });
+        }
         navigate('/restaurants');
 
         clearForm();
