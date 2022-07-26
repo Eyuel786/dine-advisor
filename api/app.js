@@ -4,6 +4,7 @@ const cors = require('cors');
 const app = express();
 
 const Restaurant = require('./models/Restaurant');
+const Review = require('./models/Review');
 const AppError = require('./helpers/AppError');
 const catchAsync = require('./helpers/catchAsync');
 const { validateRestaurant } = require('./helpers/middlewares');
@@ -42,6 +43,25 @@ app.patch('/restaurants/:id', validateRestaurant, catchAsync(async (req, res) =>
 app.delete('/restaurants/:id', catchAsync(async (req, res) => {
     await Restaurant.findByIdAndDelete(req.params.id);
     res.json({ message: 'Restaurant deleted' });
+}));
+
+// REVIEWS
+
+app.post('/restaurants/:id/reviews', catchAsync(async (req, res) => {
+    const restaurant = await Restaurant.findById(req.params.id);
+    const review = new Review(req.body);
+    restaurant.reviews.push(review);
+    await restaurant.save();
+    await review.save();
+    res.json(restaurant.toObject({ getters: true }));
+}));
+
+app.delete('/restaurants/:id/reviews/:reviewId', catchAsync(async (req, res) => {
+    const { id, reviewId } = req.params;
+    const restaurant = await Restaurant.findByIdAndUpdate(id,
+        { $pull: { reviews: reviewId } }, { new: true, runValidators: true });
+    await Review.findByIdAndDelete(reviewId);
+    res.json(restaurant.toObject({ getters: true }));
 }));
 
 app.all('*', (req, res, next) => {
