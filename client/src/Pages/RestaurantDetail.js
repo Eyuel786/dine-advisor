@@ -6,7 +6,7 @@ import { makeStyles } from '@mui/styles';
 import { useDispatch } from 'react-redux';
 
 
-import { restaurantsActions } from '../store';
+import { removeRestaurantFromDB } from '../store';
 
 
 import DetailCard from '../shared/DetailCard';
@@ -26,7 +26,7 @@ function RestaurantDetail() {
     const state = useStore().getState();
     const restaurant = state.restaurants.find(r => r.id === id);
 
-    const removeRestaurant = () => dispatch(restaurantsActions.remove({ id }));
+    const removeRestaurant = () => dispatch(removeRestaurantFromDB(id));
 
     return (
         <Box className={styles.background}>

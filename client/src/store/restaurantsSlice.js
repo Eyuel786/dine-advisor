@@ -1,36 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { v4 as uuid } from 'uuid';
-
-
-const initialState = {
-    restaurants: [
-        {
-            id: uuid(),
-            name: 'Tuscany Courtyard',
-            description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias est reiciendis ipsam velit accusantium necessitatibus repudiandae, voluptatibus veritatis tempore atque',
-            image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80',
-            city: 'Los Angeles',
-            state: 'California',
-            country: 'United States',
-            email: 'tuscanyC@gmail.com'
-        },
-        {
-            id: uuid(),
-            name: 'Grill & Chill',
-            description: 'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Adipisci, voluptatum veritatis! Repellendus ad atque nemo libero assumenda. Minima, repellat debitis',
-            image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80',
-            city: 'Denver',
-            state: 'Colorado',
-            country: 'United States',
-            email: 'grillChill@gmail.com'
-        }
-    ]
-}
 
 
 export const restaurantsSlice = createSlice({
     name: 'restaurants',
-    initialState,
+    initialState: { restaurants: [] },
     reducers: {
         replace: (state, action) => {
             state.restaurants = [...action.payload.restaurants]
@@ -50,3 +23,80 @@ export const restaurantsSlice = createSlice({
 });
 
 export const restaurantsActions = restaurantsSlice.actions;
+
+const url = 'http://localhost:9000/restaurants';
+
+export const fetchAllRestaurants = () => {
+    return async dispatch => {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Error sending restaurant');
+
+            const responseData = await response.json();
+            console.log(responseData);
+            dispatch(restaurantsActions.replace({ restaurants: responseData }));
+        } catch (err) {
+            console.log('Error:', err.message);
+        }
+    }
+}
+
+export const sendNewRestaurant = restaurant => {
+    return async dispatch => {
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(restaurant)
+            });
+
+            if (!response.ok) throw new Error('Error sending new restaurant');
+
+            const responseData = await response.json();
+            dispatch(restaurantsActions.add({ restaurant: responseData }));
+
+        } catch (err) {
+            console.log('Error:', err.message);
+        }
+    }
+}
+
+export const sendUpdateRestaurant = (id, restaurant) => {
+    return async dispatch => {
+        try {
+            const response = await fetch(`${url}/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(restaurant)
+            });
+
+            if (!response.ok) throw new Error('Error sending updated restaurant');
+
+            const responseData = await response.json();
+            dispatch(restaurantsActions.update({ id, restaurant: responseData }));
+        } catch (err) {
+            console.log('Error:', err.message)
+        }
+    }
+}
+
+export const removeRestaurantFromDB = id => {
+    return async dispatch => {
+        try {
+            const response = await fetch(`${url}/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) throw new Error('Error removing restaurant from DB');
+
+            await response.json();
+            dispatch(restaurantsActions.remove({ id }));
+        } catch (err) {
+            console.log('Error:', err.message);
+        }
+    }
+}

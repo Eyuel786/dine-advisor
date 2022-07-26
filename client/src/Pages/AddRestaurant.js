@@ -3,14 +3,14 @@ import { Typography } from '@mui/material';
 import { useDispatch } from 'react-redux';
 
 import RestaurantForm from '../shared/RestaurantForm';
-import { restaurantsActions } from '../store';
+import { sendNewRestaurant } from '../store';
 
 function AddRestaurant() {
     const dispatch = useDispatch();
 
-    const addNewRestaurant = restaurant => {
-        dispatch(restaurantsActions.add({ restaurant }));
-    }
+    const addNewRestaurant = restaurant =>
+        (dispatch(sendNewRestaurant(restaurant)));
+
 
     return (
         <>

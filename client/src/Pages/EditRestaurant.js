@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 
 
 import RestaurantForm from '../shared/RestaurantForm';
-import { restaurantsActions } from '../store';
+import { sendUpdateRestaurant } from '../store';
 
 function EditRestaurant() {
     const { id } = useParams();
@@ -15,7 +15,7 @@ function EditRestaurant() {
     const restaurant = state.restaurants.find(r => r.id === id);
 
     const updateRestaurant = updatedRestaurant =>
-        (dispatch(restaurantsActions.update({ id, restaurant: updatedRestaurant })));
+        (dispatch(sendUpdateRestaurant(id, updatedRestaurant)));
 
     return (
         <>
