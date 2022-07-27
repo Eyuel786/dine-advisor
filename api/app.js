@@ -1,13 +1,19 @@
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const app = express();
 
 const Restaurant = require('./models/Restaurant');
 const Review = require('./models/Review');
+const User = require('./models/User');
 const AppError = require('./helpers/AppError');
 const catchAsync = require('./helpers/catchAsync');
-const { validateRestaurant } = require('./helpers/middlewares');
+const { validateRestaurant, validatePerson, validateUser, userExists, userAlreadyExists } = require('./helpers/middlewares');
 
 mongoose.connect('mongodb://localhost:27017/dine-advisor-db')
     .then(res => console.log('Database connected'))
@@ -62,6 +68,49 @@ app.delete('/restaurants/:id/reviews/:reviewId', catchAsync(async (req, res) => 
         { $pull: { reviews: reviewId } }, { new: true, runValidators: true }).populate('reviews');
     await Review.findByIdAndDelete(reviewId);
     res.json(restaurant.toObject({ getters: true }));
+}));
+
+// USER
+
+app.post('/register', validatePerson, userAlreadyExists, catchAsync(async (req, res) => {
+    const { username, email, password, image } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const user = new User({ username, email, password: hashedPassword, image });
+    await user.save();
+
+    const token = jwt.sign(
+        { userId: user._id, username: user.username, email: user.email },
+        process.env.JWT_PRIVATE_KEY,
+        { expiresIn: '7d' }
+    );
+
+    res.json({
+        userId: user._id,
+        username: user.username,
+        email: user.email,
+        image: user.image,
+        tokenExpirationDate: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        token
+    });
+}));
+
+app.post('/login', validateUser, userExists, catchAsync(async (req, res) => {
+    const user = await User.findOne({ username: req.body.username });
+
+    const token = jwt.sign(
+        { userId: user._id, username: user.username, email: user.email },
+        process.env.JWT_PRIVATE_KEY,
+        { expiresIn: '7d' }
+    );
+
+    res.json({
+        userId: user._id,
+        username: user.username,
+        email: user.email,
+        image: user.image,
+        tokenExpirationDate: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        token
+    });
 }));
 
 app.all('*', (req, res, next) => {
