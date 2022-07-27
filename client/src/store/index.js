@@ -1,7 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
 import {
     restaurantsSlice, restaurantsActions, fetchAllRestaurants,
-    sendNewRestaurant, sendUpdateRestaurant, removeRestaurantFromDB
+    sendNewRestaurant, sendUpdateRestaurant, removeRestaurantFromDB,
+    sendNewReview, removeReviewFromDB
 } from './restaurantsSlice';
 
 
@@ -11,5 +12,6 @@ export const store = configureStore({
 
 export {
     restaurantsActions, fetchAllRestaurants, sendNewRestaurant,
-    sendUpdateRestaurant, removeRestaurantFromDB
+    sendUpdateRestaurant, removeRestaurantFromDB, sendNewReview,
+    removeReviewFromDB
 };

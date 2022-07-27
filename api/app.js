@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.get('/restaurants', catchAsync(async (req, res) => {
-    const restaurants = await Restaurant.find({});
+    const restaurants = await Restaurant.find({}).populate('reviews');
     res.json(restaurants.map(r => r.toObject({ getters: true })));
 }));
 
@@ -30,13 +30,13 @@ app.post('/restaurants', validateRestaurant, catchAsync(async (req, res) => {
 }));
 
 app.get('/restaurants/:id', catchAsync(async (req, res) => {
-    const restaurant = await Restaurant.findById(req.params.id);
+    const restaurant = await Restaurant.findById(req.params.id).populate('reviews');
     res.json(restaurant.toObject({ getters: true }));
 }));
 
 app.patch('/restaurants/:id', validateRestaurant, catchAsync(async (req, res) => {
     const restaurant = await Restaurant.findByIdAndUpdate(req.params.id,
-        req.body, { new: true, runValidators: true });
+        req.body, { new: true, runValidators: true }).populate('reviews');
     res.json(restaurant.toObject({ getters: true }));
 }));
 
@@ -48,7 +48,7 @@ app.delete('/restaurants/:id', catchAsync(async (req, res) => {
 // REVIEWS
 
 app.post('/restaurants/:id/reviews', catchAsync(async (req, res) => {
-    const restaurant = await Restaurant.findById(req.params.id);
+    const restaurant = await Restaurant.findById(req.params.id).populate('reviews');
     const review = new Review(req.body);
     restaurant.reviews.push(review);
     await restaurant.save();
@@ -59,7 +59,7 @@ app.post('/restaurants/:id/reviews', catchAsync(async (req, res) => {
 app.delete('/restaurants/:id/reviews/:reviewId', catchAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     const restaurant = await Restaurant.findByIdAndUpdate(id,
-        { $pull: { reviews: reviewId } }, { new: true, runValidators: true });
+        { $pull: { reviews: reviewId } }, { new: true, runValidators: true }).populate('reviews');
     await Review.findByIdAndDelete(reviewId);
     res.json(restaurant.toObject({ getters: true }));
 }));

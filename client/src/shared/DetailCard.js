@@ -47,22 +47,20 @@ function DetailCard(props) {
                     {restaurant.name}
                 </Typography>
                 <Typography
-                    variant='body2'
+                    variant='body1'
                     color='text.secondary'
                     gutterBottom>
                     {restaurant.description}
                 </Typography>
                 <Divider />
                 <Typography
-                    sx={{ padding: '4px 0' }}
-                    variant='subtitle1'>
+                    sx={{ padding: '4px 0' }}>
                     {`${restaurant.state}, 
                                 ${restaurant.city}`}
                 </Typography>
                 <Divider />
                 <Typography
-                    sx={{ padding: '4px 0' }}
-                    variant='subtitle1'>
+                    sx={{ padding: '4px 0' }}>
                     {restaurant.email}
                 </Typography>
                 <Divider />

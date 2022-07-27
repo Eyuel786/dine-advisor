@@ -100,3 +100,42 @@ export const removeRestaurantFromDB = id => {
         }
     }
 }
+
+export const sendNewReview = (id, review) => {
+    return async dispatch => {
+        try {
+            const response = await fetch(`${url}/${id}/reviews`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(review)
+            });
+
+            if (!response.ok) throw new Error('Error sending new review');
+
+            const responseData = await response.json();
+            dispatch(restaurantsActions.update({ id, restaurant: responseData }));
+
+        } catch (err) {
+            console.log('Error:', err.message);
+        }
+    }
+}
+
+export const removeReviewFromDB = (id, reviewId) => {
+    return async dispatch => {
+        try {
+            const response = await fetch(`${url}/${id}/reviews/${reviewId}`,
+                { method: 'DELETE' });
+
+            if (!response.ok) throw new Error('Error removing review from DB');
+
+            const responseData = await response.json();
+            dispatch(restaurantsActions.update({ id, restaurant: responseData }));
+
+        } catch (err) {
+            console.log('Error:', err.message);
+        }
+    }
+}
