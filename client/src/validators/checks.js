@@ -17,3 +17,21 @@ export const checkLength = (fieldName, value, min, max) => {
     }
 }
 
+export const checkEmail = value => {
+    const trimmedValue = value.trim();
+
+    const emailIsValid = /[a-zA-Z0-9]+@[a-z]+\.[a-z]{2,3}/.test(trimmedValue);
+    if (!emailIsValid) return 'Email is not valid';
+
+    return null;
+}
+
+export const checkPassword = value => {
+    const trimmedValue = value.trim();
+
+    const passwordIsValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(trimmedValue);
+
+    if (!passwordIsValid) return 'Password is not valid';
+
+    return null;
+}

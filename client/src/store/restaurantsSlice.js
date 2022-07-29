@@ -33,7 +33,6 @@ export const fetchAllRestaurants = () => {
             if (!response.ok) throw new Error('Error sending restaurant');
 
             const responseData = await response.json();
-            console.log(responseData);
             dispatch(restaurantsActions.replace({ restaurants: responseData }));
         } catch (err) {
             console.log('Error:', err.message);

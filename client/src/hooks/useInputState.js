@@ -24,13 +24,14 @@ function inputReducer(state, action) {
     }
 }
 
-export function useInputState(initVal = '', validator) {
+export function useInputState(initVal = '', validator, op) {
     const [state, dispatch] = useReducer(inputReducer,
         { enteredValue: initVal, inputIsTouched: false });
 
     const { enteredValue, inputIsTouched } = state;
 
-    const errorMessage = validator(enteredValue);
+    const errorMessage = op ? validator(enteredValue, op.value2)
+        : validator(enteredValue);
     const inputIsValid = !errorMessage;
     const inputHasError = inputIsTouched && !inputIsValid;
 

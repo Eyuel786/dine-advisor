@@ -24,7 +24,7 @@ function RestaurantDetail() {
     const styles = useStyles();
     const dispatch = useDispatch();
     const { id } = useParams();
-    const restaurants = useSelector(state => state.restaurants);
+    const restaurants = useSelector(state => state.restaurants.restaurants);
     const restaurant = restaurants.find(r => r.id === id);
 
     const removeRestaurant = () => dispatch(removeRestaurantFromDB(id));

@@ -6,7 +6,7 @@ import CardList from '../shared/CardList';
 
 
 function RestaurantsList() {
-    const restaurants = useSelector(state => state.restaurants);
+    const restaurants = useSelector(state => state.restaurants.restaurants);
 
     return (
         <>

@@ -20,6 +20,15 @@ const useStyles = makeStyles(theme => ({
         '&.MuiTypography-root': {
             marginBottom: '1rem'
         }
+    },
+    submitBtn: {
+        '&.MuiButton-root': {
+            ...theme.typography.btn,
+            margin: '1rem 0 0',
+            '&:hover': {
+                backgroundColor: theme.palette.primary.light
+            }
+        }
     }
 }));
 
@@ -93,14 +102,14 @@ function AddReview({ id }) {
                             onChange={handleRatingChange} />
                     </Box>
                     <TextField
-                        label='Title'
+                        placeholder='Title'
                         value={title}
                         onChange={handleTitleChange}
                         onBlur={handleTitleBlur}
                         error={titleHasError}
                         helperText={titleHasError && titleErrorMessage} />
                     <TextField
-                        label='Comment'
+                        placeholder='Comment'
                         value={comment}
                         onChange={handleCommentChange}
                         onBlur={handleCommentBlur}
@@ -108,13 +117,14 @@ function AddReview({ id }) {
                         helperText={commentHasError && commentErrorMessage}
                         rows={3}
                         multiline />
-                    <Button
-                        size='small'
-                        variant='contained'
-                        type='submit'>
-                        Submit
-                    </Button>
                 </Stack>
+                <Button
+                    size='small'
+                    variant='contained'
+                    type='submit'
+                    className={styles.submitBtn}>
+                    Submit
+                </Button>
             </form>
 
         </Box>

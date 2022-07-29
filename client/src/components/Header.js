@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import {
     AppBar, SwipeableDrawer, Tab, Tabs, Toolbar,
     Typography, useScrollTrigger, useMediaQuery, IconButton,
-    List, ListItemButton, ListItemText
+    List, ListItemButton, ListItemText, Button, Avatar, Menu, MenuItem
 } from '@mui/material';
 import { makeStyles, useTheme } from '@mui/styles';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
+import { logoutRequest } from '../store';
 
 function ElevationOnScroll({ children }) {
 
@@ -25,6 +27,7 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: '#fff',
             zIndex: theme.zIndex.modal + 1,
             boxShadow: theme.shadows[1],
+
             [theme.breakpoints.down('lg')]: {
                 padding: '0 1rem'
             }
@@ -70,6 +73,35 @@ const useStyles = makeStyles(theme => ({
             ...theme.typography.tab,
             color: 'inherit'
         }
+    },
+    signInBtn: {
+        '&.MuiButton-root': {
+            ...theme.typography.btn,
+            '&:hover': {
+                backgroundColor: theme.palette.primary.light
+            }
+        }
+    },
+    userListItem: {
+        '&.MuiListItemButton-root': {
+            backgroundColor: theme.palette.primary.main,
+            color: '#fff',
+            '&:hover': {
+                backgroundColor: theme.palette.primary.light
+            }
+        }
+    },
+    avatarButton: {
+        '&.MuiButton-root': {
+            '&:hover': {
+                background: 'none'
+            }
+        }
+    },
+    menuItem: {
+        '&.MuiMenuItem-root': {
+            ...theme.typography.tab
+        }
     }
 }));
 
@@ -81,13 +113,27 @@ const TABS = [
     { name: 'Contact Us', route: '/contact' }
 ];
 
-function Header() {
+function Header(props) {
     const styles = useStyles();
     const theme = useTheme();
     const location = useLocation();
+    const dispatch = useDispatch();
+    const { token, image, username } = props;
 
     const [tab, setTab] = useState(false);
     const [openDrawer, setOpenDrawer] = useState(false);
+    const [openMenu, setOpenMenu] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const handleMenuOpen = e => {
+        setAnchorEl(e.currentTarget);
+        setOpenMenu(true);
+    }
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+        setOpenMenu(false);
+    }
 
     const matchesMd = useMediaQuery(theme.breakpoints.down('md'));
     const iOS =
@@ -109,8 +155,10 @@ function Header() {
                 onClose={() => setOpenDrawer(false)}
                 disableBackdropTransition={!iOS}
                 disableDiscovery={iOS}>
+
                 <Toolbar
                     className={styles.toolbarMargins} />
+
                 <List disablePadding>
                     {TABS.map((myTab, index) => (
                         <ListItemButton
@@ -132,8 +180,42 @@ function Header() {
                             </ListItemText>
                         </ListItemButton>
                     ))}
+
+                    {!token && <ListItemButton
+                        divider
+                        to='/signin'
+                        component={Link}
+                        disableRipple
+                        className={styles.userListItem}
+                        onClick={() => {
+                            setOpenDrawer(false);
+                            setTab(false);
+                        }}>
+                        <ListItemText
+                            className={styles.drawerItemText}
+                            disableTypography>
+                            Sign in
+                        </ListItemText>
+                    </ListItemButton>}
+                    {token &&
+                        <ListItemButton
+                            divider
+                            disableRipple
+                            className={styles.userListItem}
+                            onClick={() => {
+                                setOpenDrawer(false);
+                                setTab(1);
+                                dispatch(logoutRequest());
+                            }}>
+                            <ListItemText
+                                className={styles.drawerItemText}
+                                disableTypography>
+                                Sign out
+                            </ListItemText>
+                        </ListItemButton>}
                 </List>
             </SwipeableDrawer>
+
             <IconButton
                 className={styles.drawerIconButton}
                 onClick={() => setOpenDrawer(!openDrawer)}>
@@ -141,21 +223,61 @@ function Header() {
             </IconButton>
         </>;
 
-    const tabs = <Tabs
-        className={styles.tabs}
-        value={tab}
-        onChange={handleTabChange}
-        TabIndicatorProps={{ sx: { backgroundColor: 'transparent' } }}>
-        {TABS.map(myTab => (
-            <Tab
-                key={myTab.name}
-                className={styles.tab}
-                to={myTab.route}
-                component={Link}
-                label={myTab.name}
-                disableRipple />
-        ))}
-    </Tabs>
+    const tabs = <>
+        <Tabs
+            className={styles.tabs}
+            value={tab}
+            onChange={handleTabChange}
+            TabIndicatorProps={{ sx: { backgroundColor: 'transparent' } }}>
+            {TABS.map(myTab => (
+                <Tab
+                    key={myTab.name}
+                    className={styles.tab}
+                    to={myTab.route}
+                    component={Link}
+                    label={myTab.name}
+                    disableRipple />
+            ))}
+        </Tabs>
+        {!token && <Button
+            to='/signin'
+            component={Link}
+
+            className={styles.signInBtn}
+            onClick={() => setTab(false)}>
+            Sign in
+        </Button>}
+        {token &&
+            <Button
+                className={styles.avatarButton}
+                aria-owns='simple-menu'
+                aria-haspopup={true}
+                onClick={handleMenuOpen}
+                disableRipple>
+                <Avatar
+                    src={image}
+                    alt={username}>
+                    {username.slice(0, 1)}
+                </Avatar>
+            </Button>
+        }
+        <Menu
+            id='simple-menu'
+            open={openMenu}
+            anchorEl={anchorEl}
+            onClose={handleMenuClose}
+            MenuListProps={{ onMouseLeave: handleMenuClose }}>
+            <MenuItem
+                className={styles.menuItem}
+                onClick={() => {
+                    handleMenuClose();
+                    setTab(1);
+                    dispatch(logoutRequest());
+                }}>
+                Logout
+            </MenuItem>
+        </Menu>
+    </>
 
     return (
         <>

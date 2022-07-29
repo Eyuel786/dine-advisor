@@ -44,6 +44,17 @@ export const theme = createTheme({
         },
         subtitle1: {
             fontSize: '0.95rem',
+        },
+        btn: {
+            borderRadius: '50px',
+            color: '#fff',
+            backgroundColor: '#000',
+            textTransform: 'none',
+            height: '43px',
+            padding: '20px',
+            fontSize: '0.9rem',
+            fontFamily: 'Raleway',
+            fontWeight: 700,
         }
     }
 });

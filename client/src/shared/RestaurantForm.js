@@ -19,16 +19,8 @@ const useStyles = makeStyles(theme => ({
     },
     submitBtn: {
         '&.MuiButton-root': {
-            borderRadius: '50px',
-            color: '#fff',
-            backgroundColor: theme.palette.primary.main,
+            ...theme.typography.btn,
             margin: '2rem 0 3rem',
-            textTransform: 'none',
-            height: '43px',
-            padding: '20px',
-            fontSize: '0.9rem',
-            fontFamily: 'Raleway',
-            fontWeight: 700,
             '&:hover': {
                 backgroundColor: theme.palette.primary.light
             }
@@ -170,14 +162,14 @@ function RestaurantForm(props) {
                     </Typography>
                     <Stack spacing={2}>
                         <TextField
-                            label='Name'
+                            placeholder='Name'
                             value={name}
                             onChange={handleNameChange}
                             onBlur={handleNameBlur}
                             error={nameHasError}
                             helperText={nameHasError && nameErrorMessage} />
                         <TextField
-                            label='Description'
+                            placeholder='Description'
                             value={description}
                             onChange={handleDescriptionChange}
                             onBlur={handleDescriptionBlur}
@@ -196,21 +188,21 @@ function RestaurantForm(props) {
                     {/*Incorporate a map to specify location*/}
                     <Stack spacing={2}>
                         <TextField
-                            label='City'
+                            placeholder='City'
                             value={city}
                             onChange={handleCityChange}
                             onBlur={handleCityBlur}
                             error={cityHasError}
                             helperText={cityHasError && cityErrorMessage} />
                         <TextField
-                            label='State'
+                            placeholder='State'
                             value={state}
                             onChange={handleStateChange}
                             onBlur={handleStateBlur}
                             error={stateHasError}
                             helperText={stateHasError && stateErrorMessage} />
                         <TextField
-                            label='Country'
+                            placeholder='Country'
                             value={country}
                             onChange={handleCountryChange}
                             onBlur={handleCountryBlur}
@@ -226,7 +218,7 @@ function RestaurantForm(props) {
                         Image
                     </Typography>
                     <TextField
-                        label='Image url'
+                        placeholder='Image url'
                         value={image}
                         onChange={handleImageChange}
                         onBlur={handleImageBlur}
@@ -240,7 +232,7 @@ function RestaurantForm(props) {
                         Contact Information
                     </Typography>
                     <TextField
-                        label='Email'
+                        placeholder='Email'
                         value={email}
                         onChange={handleEmailChange}
                         onBlur={handleEmailBlur}

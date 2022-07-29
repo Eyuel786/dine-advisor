@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -10,9 +10,13 @@ import AddRestaurant from './pages/AddRestaurant';
 import RestaurantDetail from './pages/RestaurantDetail';
 import EditRestaurant from './pages/EditRestaurant';
 import { fetchAllRestaurants } from './store';
+import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
 
 function App() {
   const dispatch = useDispatch();
+  const user = useSelector(state => state.auth.auth);
+  console.log(user.token);
 
   useEffect(() => {
     dispatch(fetchAllRestaurants());
@@ -20,7 +24,10 @@ function App() {
 
   return (
     <>
-      <Header />
+      <Header
+        token={user.token}
+        image={user.image}
+        username={user.username} />
       <Routes>
         <Route path='/' element={<Navigate to='/home' replace />} />
         <Route path='/home' element={<Home />} />
@@ -30,6 +37,8 @@ function App() {
         <Route path='/restaurants/:id/edit' element={<EditRestaurant />} />
         <Route path='/about' element={<div>About Us</div>} />
         <Route path='/contact' element={<div>Contact Us</div>} />
+        <Route path='/signin' element={<SignIn />} />
+        <Route path='/signup' element={<SignUp />} />
         <Route path='*' element={<div>Page not found</div>} />
       </Routes>
       <Footer />
