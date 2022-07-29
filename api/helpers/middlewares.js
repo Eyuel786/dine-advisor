@@ -1,9 +1,15 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const Restaurant = require('../models/Restaurant');
+const Review = require('../models/Review');
 
 const User = require('../models/User');
 const AppError = require('./AppError');
 const catchAsync = require('./catchAsync');
-const { checkEmail, checkLength, checkRequired, checkPassword } = require('./checks');
+const {
+    checkEmail, checkLength, checkRequired,
+    checkPassword, checkRating
+} = require('./checks');
 
 
 module.exports.validateRestaurant = (req, res, next) => {
@@ -64,6 +70,25 @@ module.exports.validateUser = (req, res, next) => {
     next();
 }
 
+module.exports.validateReview = (req, res, next) => {
+    const requireds = ['rating', 'title', 'comment'];
+    const { rating, title, comment } = req.body;
+
+    let errorMessage = checkRequired(req.body, requireds);
+    if (errorMessage) return next(new AppError(errorMessage, 400));
+
+    errorMessage = checkRating(rating);
+    if (errorMessage) return next(new AppError(errorMessage, 400));
+
+    errorMessage = checkLength('title', title, 3, 40);
+    if (errorMessage) return next(new AppError(errorMessage, 400));
+
+    errorMessage = checkLength('comment', comment, 100, 300);
+    if (errorMessage) return next(new AppError(errorMessage, 400));
+
+    next();
+}
+
 module.exports.userAlreadyExists = catchAsync(async (req, res, next) => {
     const { username, email } = req.body;
 
@@ -84,6 +109,51 @@ module.exports.userExists = catchAsync(async (req, res, next) => {
 
     const passwordMatches = await bcrypt.compare(password, user.password);
     if (!passwordMatches) return next(new AppError('Invalid credentials', 400));
+
+    next();
+});
+
+module.exports.restaurantExists = catchAsync(async (req, res, next) => {
+    const restaurant = await Restaurant.findById(req.params.id);
+    if (!restaurant) return next(new AppError('Restaurant not found', 400));
+
+    next();
+});
+
+module.exports.reviewExists = catchAsync(async (req, res, next) => {
+    const review = await Review.findById(req.params.reviewId);
+    if (!review) return next(new AppError('Review not found', 400));
+
+    next();
+});
+
+module.exports.isAuthenticated = (req, res, next) => {
+    if (!req.headers.authorization)
+        return next(new AppError('You need to be authenticated', 401));
+
+    const token = req.headers.authorization.split(' ')[1];
+
+    const decodedToken = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
+    req.currentUser = decodedToken.userId;
+    next();
+};
+
+module.exports.isAuthor = catchAsync(async (req, res, next) => {
+    const restaurant = await Restaurant.findById(req.params.id);
+
+    if (!restaurant.creator.equals(req.currentUser))
+        return next(new AppError('You are not authorized', 403));
+
+    next();
+});
+
+module.exports.isReviewAuthor = catchAsync(async (req, res, next) => {
+    const review = await Review.findById(req.params.reviewId);
+
+    if (!review.creator.equals(req.currentUser))
+        return next(new AppError('You are not authorized', 403));
+
+    console.log('Passed Authorship');
 
     next();
 });

@@ -41,12 +41,16 @@ export const fetchAllRestaurants = () => {
 }
 
 export const sendNewRestaurant = restaurant => {
-    return async dispatch => {
+    return async (dispatch, getState) => {
         try {
+            const state = getState();
+            const { token } = state.auth.auth;
+
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
                 },
                 body: JSON.stringify(restaurant)
             });
@@ -62,13 +66,17 @@ export const sendNewRestaurant = restaurant => {
     }
 }
 
-export const sendUpdateRestaurant = (id, restaurant) => {
-    return async dispatch => {
+export const sendUpdatedRestaurant = (id, restaurant) => {
+    return async (dispatch, getState) => {
         try {
+            const state = getState();
+            const { token } = state.auth.auth;
+
             const response = await fetch(`${url}/${id}`, {
                 method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
                 },
                 body: JSON.stringify(restaurant)
             });
@@ -84,10 +92,16 @@ export const sendUpdateRestaurant = (id, restaurant) => {
 }
 
 export const removeRestaurantFromDB = id => {
-    return async dispatch => {
+    return async (dispatch, getState) => {
         try {
+            const state = getState();
+            const { token } = state.auth.auth;
+
             const response = await fetch(`${url}/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
             });
 
             if (!response.ok) throw new Error('Error removing restaurant from DB');
@@ -101,12 +115,16 @@ export const removeRestaurantFromDB = id => {
 }
 
 export const sendNewReview = (id, review) => {
-    return async dispatch => {
+    return async (dispatch, getState) => {
         try {
+            const state = getState();
+            const { token } = state.auth.auth;
+
             const response = await fetch(`${url}/${id}/reviews`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
                 },
                 body: JSON.stringify(review)
             });
@@ -123,10 +141,17 @@ export const sendNewReview = (id, review) => {
 }
 
 export const removeReviewFromDB = (id, reviewId) => {
-    return async dispatch => {
+    return async (dispatch, getState) => {
         try {
-            const response = await fetch(`${url}/${id}/reviews/${reviewId}`,
-                { method: 'DELETE' });
+            const state = getState();
+            const { token } = state.auth.auth;
+
+            const response = await fetch(`${url}/${id}/reviews/${reviewId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            });
 
             if (!response.ok) throw new Error('Error removing review from DB');
 

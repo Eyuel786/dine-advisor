@@ -14,7 +14,8 @@ const useStyles = makeStyles(theme => ({
     addReview: {
         width: '24rem',
         backgroundColor: '#fff',
-        padding: '1rem'
+        padding: '1rem',
+        marginBottom: '2rem'
     },
     title: {
         '&.MuiTypography-root': {
@@ -32,9 +33,10 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function AddReview({ id }) {
+function AddReview(props) {
     const styles = useStyles();
     const dispatch = useDispatch();
+    const { id } = props;
 
     const [rating, setRating] = useState(1);
 

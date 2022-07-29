@@ -28,7 +28,9 @@ const useStyles = makeStyles(theme => ({
 function DetailCard(props) {
     const styles = useStyles();
     const navigate = useNavigate();
-    const { restaurant, removeRestaurant } = props;
+    const { restaurant, removeRestaurant, userId } = props;
+
+    const isAuthor = restaurant.creator === userId;
 
     return (
         <Card
@@ -38,8 +40,7 @@ function DetailCard(props) {
                 image={restaurant.image}
                 alt={restaurant.name}
                 height='240'
-                component='img'
-            />
+                component='img' />
             <CardContent>
                 <Typography
                     variant='h4'
@@ -65,7 +66,7 @@ function DetailCard(props) {
                 </Typography>
                 <Divider />
             </CardContent>
-            <CardActions>
+            {isAuthor && <CardActions>
                 <Button
                     sx={{ margin: '0 0.5rem' }}
                     className={`${styles.button} ${styles.editBtn}`}
@@ -86,7 +87,7 @@ function DetailCard(props) {
                     }}>
                     Delete
                 </Button>
-            </CardActions>
+            </CardActions>}
         </Card>
     );
 }
