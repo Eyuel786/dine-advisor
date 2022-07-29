@@ -39,6 +39,18 @@ module.exports.checkPassword = value => {
     return null;
 }
 
+module.exports.checkRating = value => {
+    const rating = parseInt(value);
+
+    if (rating < 1) {
+        return 'Rating must be less than 1';
+    } else if (rating > 5) {
+        return 'Rating must be less than 5';
+    } else {
+        return null;
+    }
+}
+
 
 
 

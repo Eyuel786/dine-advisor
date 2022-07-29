@@ -22,6 +22,13 @@ function App() {
     dispatch(fetchAllRestaurants());
   }, [dispatch]);
 
+
+  const ProtectedRoute = ({ token, children, redirectPath = '/restaurants' }) => {
+    if (!token) return <Navigate to={redirectPath} replace />
+
+    return children;
+  }
+
   return (
     <>
       <Header
@@ -32,9 +39,15 @@ function App() {
         <Route path='/' element={<Navigate to='/home' replace />} />
         <Route path='/home' element={<Home />} />
         <Route path='/restaurants' element={<RestaurantsList />} />
-        <Route path='/restaurants/new' element={<AddRestaurant />} />
-        <Route path='/restaurants/:id' element={<RestaurantDetail />} />
-        <Route path='/restaurants/:id/edit' element={<EditRestaurant />} />
+        <Route path='/restaurants/new' element={
+          <ProtectedRoute token={user.token}>
+            <AddRestaurant />
+          </ProtectedRoute>} />
+        <Route path='/restaurants/:id' element={<RestaurantDetail userId={user.userId} />} />
+        <Route path='/restaurants/:id/edit' element={
+          <ProtectedRoute token={user.token}>
+            <EditRestaurant />
+          </ProtectedRoute>} />
         <Route path='/about' element={<div>About Us</div>} />
         <Route path='/contact' element={<div>Contact Us</div>} />
         <Route path='/signin' element={<SignIn />} />

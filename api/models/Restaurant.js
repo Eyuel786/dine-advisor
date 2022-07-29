@@ -11,7 +11,8 @@ const restaurantSchema = new Schema({
     state: String,
     country: String,
     email: String,
-    reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }]
+    reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
+    creator: { type: Schema.Types.ObjectId, ref: 'User' }
 });
 
 restaurantSchema.post('findOneAndDelete', catchAsync(async restaurant => {

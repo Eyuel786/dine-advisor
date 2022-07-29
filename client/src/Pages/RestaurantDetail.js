@@ -17,13 +17,14 @@ import Reviews from '../components/Reviews';
 const useStyles = makeStyles(theme => ({
     background: {
         ...theme.typography.canvas
-    },
+    }
 }));
 
-function RestaurantDetail() {
+function RestaurantDetail(props) {
     const styles = useStyles();
     const dispatch = useDispatch();
     const { id } = useParams();
+    const { userId } = props;
     const restaurants = useSelector(state => state.restaurants.restaurants);
     const restaurant = restaurants.find(r => r.id === id);
 
@@ -34,12 +35,15 @@ function RestaurantDetail() {
             <Grid container justifyContent='space-between'>
                 <Grid item>
                     <DetailCard
+                        userId={userId}
                         restaurant={restaurant}
                         removeRestaurant={removeRestaurant} />
                 </Grid>
                 <Grid item>
-                    <AddReview id={id} />
-                    <Reviews restaurant={restaurant} />
+                    {userId && <AddReview id={id} />}
+                    <Reviews
+                        restaurant={restaurant}
+                        userId={userId} />
                 </Grid>
             </Grid>
         </Box>
