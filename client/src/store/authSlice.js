@@ -41,6 +41,7 @@ export const sendSignUpRequest = userData => {
 
             const responseData = await response.json();
             dispatch(authActions.login({ auth: responseData }));
+            localStorage.setItem('dine-advisor-user', JSON.stringify(responseData));
 
         } catch (err) {
             console.log('Error:', err.message);
@@ -63,6 +64,7 @@ export const sendSignInRequest = userData => {
 
             const responseData = await response.json();
             dispatch(authActions.login({ auth: responseData }));
+            localStorage.setItem('dine-advisor-user', JSON.stringify(responseData));
 
         } catch (err) {
             console.log('Error:', err.message);
@@ -72,6 +74,11 @@ export const sendSignInRequest = userData => {
 
 export const logoutRequest = () => {
     return dispatch => {
-        dispatch(authActions.logout());
+        try {
+            dispatch(authActions.logout());
+            localStorage.removeItem('dine-advisor-user');
+        } catch (err) {
+            console.log('Error:', err.message);
+        }
     }
 }

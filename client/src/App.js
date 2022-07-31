@@ -12,16 +12,16 @@ import EditRestaurant from './pages/EditRestaurant';
 import { fetchAllRestaurants } from './store';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
+import { useAuth } from './hooks/useAuth';
 
 function App() {
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.auth);
-  console.log(user.token);
+  useAuth(user);
 
   useEffect(() => {
     dispatch(fetchAllRestaurants());
   }, [dispatch]);
-
 
   const ProtectedRoute = ({ token, children, redirectPath = '/restaurants' }) => {
     if (!token) return <Navigate to={redirectPath} replace />
@@ -43,7 +43,9 @@ function App() {
           <ProtectedRoute token={user.token}>
             <AddRestaurant />
           </ProtectedRoute>} />
-        <Route path='/restaurants/:id' element={<RestaurantDetail userId={user.userId} />} />
+        <Route path='/restaurants/:id' element={
+          <RestaurantDetail
+            userId={user.userId} />} />
         <Route path='/restaurants/:id/edit' element={
           <ProtectedRoute token={user.token}>
             <EditRestaurant />
