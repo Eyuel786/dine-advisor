@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const fs = require('fs');
+
 const Review = require('./Review');
 const { Schema } = mongoose;
 const catchAsync = require('../helpers/catchAsync');
@@ -20,6 +22,10 @@ restaurantSchema.post('findOneAndDelete', catchAsync(async restaurant => {
         for (let reviewId of restaurant.reviews) {
             await Review.findByIdAndDelete(reviewId);
         }
+    }
+
+    if (restaurant.image) {
+        fs.unlink(restaurant.image, () => { });
     }
 }));
 

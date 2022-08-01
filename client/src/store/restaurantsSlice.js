@@ -43,16 +43,29 @@ export const fetchAllRestaurants = () => {
 export const sendNewRestaurant = restaurant => {
     return async (dispatch, getState) => {
         try {
-            const state = getState();
-            const { token } = state.auth.auth;
+            const myState = getState();
+            const { token } = myState.auth.auth;
+
+            const {
+                name, description, image, city,
+                state, country, email
+            } = restaurant;
+
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('description', description);
+            formData.append('image', image);
+            formData.append('city', city);
+            formData.append('state', state);
+            formData.append('country', country);
+            formData.append('email', email);
 
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + token
+                    'Authorization': 'Bearer ' + token,
                 },
-                body: JSON.stringify(restaurant)
+                body: formData
             });
 
             if (!response.ok) throw new Error('Error sending new restaurant');
@@ -69,16 +82,29 @@ export const sendNewRestaurant = restaurant => {
 export const sendUpdatedRestaurant = (id, restaurant) => {
     return async (dispatch, getState) => {
         try {
-            const state = getState();
-            const { token } = state.auth.auth;
+            const myState = getState();
+            const { token } = myState.auth.auth;
+
+            const {
+                name, description, image, city,
+                state, country, email
+            } = restaurant;
+
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('description', description);
+            formData.append('image', image);
+            formData.append('city', city);
+            formData.append('state', state);
+            formData.append('country', country);
+            formData.append('email', email);
 
             const response = await fetch(`${url}/${id}`, {
                 method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + token
                 },
-                body: JSON.stringify(restaurant)
+                body: formData
             });
 
             if (!response.ok) throw new Error('Error sending updated restaurant');

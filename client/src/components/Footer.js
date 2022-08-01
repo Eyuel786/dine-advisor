@@ -36,8 +36,9 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function Footer() {
+function Footer(props) {
     const styles = useStyles();
+    const { token } = props;
 
     return (
         <Box className={styles.footer}>
@@ -76,7 +77,7 @@ function Footer() {
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item>
+                    {token && <Grid item>
                         <Grid container direction='column'>
                             <Grid
                                 item
@@ -86,7 +87,7 @@ function Footer() {
                                 Add Restaurant
                             </Grid>
                         </Grid>
-                    </Grid>
+                    </Grid>}
                     <Grid item>
                         <Grid container direction='column'>
                             <Grid

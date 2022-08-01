@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 
 const Restaurant = require('./models/Restaurant');
@@ -13,6 +15,7 @@ const Review = require('./models/Review');
 const User = require('./models/User');
 const AppError = require('./helpers/AppError');
 const catchAsync = require('./helpers/catchAsync');
+const imageUpload = require('./helpers/imageUpload');
 const {
     validateRestaurant, validatePerson, validateUser, validateReview,
     restaurantExists, reviewExists, userExists, userAlreadyExists,
@@ -21,11 +24,12 @@ const {
 
 mongoose.connect('mongodb://localhost:27017/dine-advisor-db')
     .then(res => console.log('Database connected'))
-    .catch(err => console.log('Could not connect ot Database'));
+    .catch(err => console.log('Could not connect to Database'));
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads/images', express.static(path.join(__dirname, '/uploads/images')));
 
 
 app.get('/restaurants', catchAsync(async (req, res) => {
@@ -36,11 +40,14 @@ app.get('/restaurants', catchAsync(async (req, res) => {
 
 app.post('/restaurants',
     isAuthenticated,
+    imageUpload.single('image'),
     validateRestaurant,
-    catchAsync(async (req, res) => {
+    catchAsync(async (req, res, err) => {
 
-        const restaurant = new Restaurant(req.body);
+        const { name, description, city, state, country, email } = req.body;
+        const restaurant = new Restaurant({ name, description, city, state, country, email });
         restaurant.creator = req.currentUser;
+        restaurant.image = req.file.path;
         await restaurant.save();
         res.status(201).json(restaurant.toObject({ getters: true }));
     }));
@@ -58,12 +65,22 @@ app.patch('/restaurants/:id',
     isAuthenticated,
     restaurantExists,
     isAuthor,
+    imageUpload.single('image'),
     validateRestaurant,
     catchAsync(async (req, res) => {
 
-        const restaurant = await Restaurant.findByIdAndUpdate(req.params.id,
-            req.body, { new: true, runValidators: true })
+        const { name, description, city, state, country, email } = req.body;
+        const restaurant = await Restaurant.findByIdAndUpdate(
+            req.params.id,
+            { name, description, city, state, country, email },
+            { new: true, runValidators: true })
             .populate({ path: 'reviews', populate: { path: 'creator', model: 'User' } });
+
+        if (req.file) {
+            fs.unlink(restaurant.image, () => { });
+            restaurant.image = req.file.path;
+            await restaurant.save();
+        }
         res.json(restaurant.toObject({ getters: true }));
     }));
 
@@ -166,6 +183,9 @@ app.all('*', (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+    if (req.file)
+        fs.unlink(req.file.path, () => { });
+
     const { message = 'Something went wrong!', statusCode = 500 } = err;
     res.status(statusCode).json({ message });
 });

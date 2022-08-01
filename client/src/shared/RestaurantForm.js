@@ -1,13 +1,15 @@
 import React from 'react';
 import { makeStyles } from '@mui/styles';
-import { Box, Button, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Grid, Stack, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import {
     validateName, validateDescription, validateCity, validateState,
-    validateCountry, validateImage, validateEmail
+    validateCountry, validateEmail
 } from '../validators/validateRestaurant';
 import { useInputState } from '../hooks/useInputState';
+import ImageUpload from '../components/ImageUpload';
+import { useImgState } from '../hooks/useImgState';
 
 const useStyles = makeStyles(theme => ({
     background: {
@@ -87,16 +89,6 @@ function RestaurantForm(props) {
     } = useInputState(restaurant && restaurant.country, validateCountry);
 
     const {
-        enteredValue: image,
-        inputIsValid: imageIsValid,
-        inputHasError: imageHasError,
-        errorMessage: imageErrorMessage,
-        handleChange: handleImageChange,
-        handleBlur: handleImageBlur,
-        reset: resetImage
-    } = useInputState(restaurant && restaurant.image, validateImage);
-
-    const {
         enteredValue: email,
         inputIsValid: emailIsValid,
         inputHasError: emailHasError,
@@ -106,8 +98,14 @@ function RestaurantForm(props) {
         reset: resetEmail
     } = useInputState(restaurant && restaurant.email, validateEmail);
 
+    const [imgState, handleImgChange, resetImg] = useImgState(
+        restaurant && `http://localhost:9000/${restaurant.image}`, !!restaurant
+    );
+
+    const { imgFile, imgPreviewUrl, imgIsValid } = imgState;
+
     const formIsValid = nameIsValid && descriptionIsValid && cityIsValid
-        && stateIsValid && countryIsValid && imageIsValid && emailIsValid;
+        && stateIsValid && countryIsValid && imgIsValid && emailIsValid;
 
     const clearForm = () => {
         resetName();
@@ -115,7 +113,7 @@ function RestaurantForm(props) {
         resetCity();
         resetState();
         resetCountry();
-        resetImage();
+        resetImg();
         resetEmail();
     }
 
@@ -127,7 +125,6 @@ function RestaurantForm(props) {
         handleCityBlur();
         handleStateBlur();
         handleCountryBlur();
-        handleImageBlur();
         handleEmailBlur();
 
         if (!formIsValid) {
@@ -138,12 +135,12 @@ function RestaurantForm(props) {
         if (isEditing) {
             updateRestaurant({
                 ...restaurant, name, description, city,
-                state, country, image, email
+                state, country, image: imgFile, email
             });
         } else {
             addNewRestaurant({
                 name, description, city,
-                state, country, image, email
+                state, country, image: imgFile, email
             });
         }
         navigate('/restaurants');
@@ -153,101 +150,98 @@ function RestaurantForm(props) {
 
     return (
         <Box className={styles.background}>
-            <Box sx={{ width: '25rem' }}>
-                <form onSubmit={handleSubmit}>
-                    <Typography
-                        variant='h4'
-                        sx={{ mb: 2 }}>
-                        Name & Description
-                    </Typography>
-                    <Stack spacing={2}>
-                        <TextField
-                            placeholder='Name'
-                            value={name}
-                            onChange={handleNameChange}
-                            onBlur={handleNameBlur}
-                            error={nameHasError}
-                            helperText={nameHasError && nameErrorMessage} />
-                        <TextField
-                            placeholder='Description'
-                            value={description}
-                            onChange={handleDescriptionChange}
-                            onBlur={handleDescriptionBlur}
-                            error={descriptionHasError}
-                            helperText={descriptionHasError && descriptionErrorMessage}
-                            rows={3}
-                            multiline />
-                    </Stack>
+            <Grid container justifyContent='space-around'>
+                <Grid item>
+                    <Box sx={{ width: '25rem' }}>
+                        <form onSubmit={handleSubmit}>
+                            <Typography
+                                variant='h4'
+                                sx={{ mb: 2 }}>
+                                Name & Description
+                            </Typography>
+                            <Stack spacing={2}>
+                                <TextField
+                                    placeholder='Name'
+                                    value={name}
+                                    onChange={handleNameChange}
+                                    onBlur={handleNameBlur}
+                                    error={nameHasError}
+                                    helperText={nameHasError && nameErrorMessage} />
+                                <TextField
+                                    placeholder='Description'
+                                    value={description}
+                                    onChange={handleDescriptionChange}
+                                    onBlur={handleDescriptionBlur}
+                                    error={descriptionHasError}
+                                    helperText={descriptionHasError && descriptionErrorMessage}
+                                    rows={3}
+                                    multiline />
+                            </Stack>
 
-                    <Typography
-                        variant='h4'
-                        sx={{ mb: 2, mt: 3 }}>
-                        Address
-                    </Typography>
+                            <Typography
+                                variant='h4'
+                                sx={{ mb: 2, mt: 3 }}>
+                                Address
+                            </Typography>
 
-                    {/*Incorporate a map to specify location*/}
-                    <Stack spacing={2}>
-                        <TextField
-                            placeholder='City'
-                            value={city}
-                            onChange={handleCityChange}
-                            onBlur={handleCityBlur}
-                            error={cityHasError}
-                            helperText={cityHasError && cityErrorMessage} />
-                        <TextField
-                            placeholder='State'
-                            value={state}
-                            onChange={handleStateChange}
-                            onBlur={handleStateBlur}
-                            error={stateHasError}
-                            helperText={stateHasError && stateErrorMessage} />
-                        <TextField
-                            placeholder='Country'
-                            value={country}
-                            onChange={handleCountryChange}
-                            onBlur={handleCountryBlur}
-                            error={countryHasError}
-                            helperText={countryHasError && countryErrorMessage} />
-                    </Stack>
-
-                    {/* MOVE THE IMAGE TO RIGHT SIDE 
-                    when you add uploading feature */}
+                            {/*Incorporate a map to specify location*/}
+                            <Stack spacing={2}>
+                                <TextField
+                                    placeholder='City'
+                                    value={city}
+                                    onChange={handleCityChange}
+                                    onBlur={handleCityBlur}
+                                    error={cityHasError}
+                                    helperText={cityHasError && cityErrorMessage} />
+                                <TextField
+                                    placeholder='State'
+                                    value={state}
+                                    onChange={handleStateChange}
+                                    onBlur={handleStateBlur}
+                                    error={stateHasError}
+                                    helperText={stateHasError && stateErrorMessage} />
+                                <TextField
+                                    placeholder='Country'
+                                    value={country}
+                                    onChange={handleCountryChange}
+                                    onBlur={handleCountryBlur}
+                                    error={countryHasError}
+                                    helperText={countryHasError && countryErrorMessage} />
+                            </Stack>
+                            <Typography
+                                variant='h4'
+                                sx={{ mb: 2, mt: 3 }}>
+                                Contact Information
+                            </Typography>
+                            <TextField
+                                placeholder='Email'
+                                value={email}
+                                onChange={handleEmailChange}
+                                onBlur={handleEmailBlur}
+                                error={emailHasError}
+                                helperText={emailHasError && emailErrorMessage}
+                                fullWidth />
+                            <Button
+                                className={styles.submitBtn}
+                                variant='contained'
+                                type='submit'
+                                disabled={!formIsValid}>
+                                Submit
+                            </Button>
+                        </form>
+                    </Box>
+                </Grid>
+                <Grid item alignSelf='center'>
                     <Typography
                         variant='h4'
                         sx={{ mb: 2, mt: 3 }}>
                         Image
                     </Typography>
-                    <TextField
-                        placeholder='Image url'
-                        value={image}
-                        onChange={handleImageChange}
-                        onBlur={handleImageBlur}
-                        error={imageHasError}
-                        helperText={imageHasError && imageErrorMessage}
-                        fullWidth />
-
-                    <Typography
-                        variant='h4'
-                        sx={{ mb: 2, mt: 3 }}>
-                        Contact Information
-                    </Typography>
-                    <TextField
-                        placeholder='Email'
-                        value={email}
-                        onChange={handleEmailChange}
-                        onBlur={handleEmailBlur}
-                        error={emailHasError}
-                        helperText={emailHasError && emailErrorMessage}
-                        fullWidth />
-                    <Button
-                        className={styles.submitBtn}
-                        variant='contained'
-                        type='submit'
-                        disabled={!formIsValid}>
-                        Submit
-                    </Button>
-                </form>
-            </Box>
+                    <ImageUpload
+                        imgPreviewUrl={imgPreviewUrl}
+                        handleImgChange={handleImgChange} />
+                </Grid>
+            </Grid>
         </Box>
     );
 }

@@ -15,7 +15,7 @@ const {
 module.exports.validateRestaurant = (req, res, next) => {
     const requireds = [
         'name', 'description', 'city', 'state',
-        'country', 'image', 'email'
+        'country', 'email'
     ];
 
     let errorMessage = checkRequired(req.body, requireds);

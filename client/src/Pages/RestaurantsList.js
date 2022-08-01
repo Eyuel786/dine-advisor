@@ -70,7 +70,7 @@ function RestaurantsList() {
                         elevation={0}
                         className={styles.card}>
                         <CardMedia
-                            image={r.image}
+                            image={`http://localhost:9000/${r.image}`}
                             component='img'
                             alt={r.name}
                             className={styles.cardImg} />

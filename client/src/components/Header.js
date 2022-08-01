@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     AppBar, SwipeableDrawer, Tab, Tabs, Toolbar,
     Typography, useScrollTrigger, useMediaQuery, IconButton,
@@ -105,13 +105,6 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const TABS = [
-    { name: 'Home', route: '/home' },
-    { name: 'Restaurants', route: '/restaurants' },
-    { name: 'Add Restaurant', route: '/restaurants/new' },
-    { name: 'About Us', route: '/about' },
-    { name: 'Contact Us', route: '/contact' }
-];
 
 function Header(props) {
     const styles = useStyles();
@@ -119,6 +112,24 @@ function Header(props) {
     const location = useLocation();
     const dispatch = useDispatch();
     const { token, image, username } = props;
+
+    const memoizedTabs = useMemo(() => {
+        const TABS = [
+            { name: 'Home', route: '/home' },
+            { name: 'Restaurants', route: '/restaurants' },
+            { name: 'About Us', route: '/about' },
+            { name: 'Contact Us', route: '/contact' }
+        ];
+
+        if (token) {
+            TABS.splice(2, 0, {
+                name: 'Add Restaurant',
+                route: '/restaurants/new'
+            });
+        }
+
+        return TABS;
+    }, [token]);
 
     const [tab, setTab] = useState(false);
     const [openDrawer, setOpenDrawer] = useState(false);
@@ -140,10 +151,10 @@ function Header(props) {
         typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
     useEffect(() => {
-        const tabIndex = TABS.findIndex(myTab => myTab.route === location.pathname);
+        const tabIndex = memoizedTabs.findIndex(myTab => myTab.route === location.pathname);
         const myTab = tabIndex < 0 ? false : tabIndex;
         setTab(myTab);
-    }, [location]);
+    }, [location, memoizedTabs]);
 
     const handleTabChange = (e, newVal) => setTab(newVal);
 
@@ -160,7 +171,7 @@ function Header(props) {
                     className={styles.toolbarMargins} />
 
                 <List disablePadding>
-                    {TABS.map((myTab, index) => (
+                    {memoizedTabs.map((myTab, index) => (
                         <ListItemButton
                             divider
                             key={myTab.name}
@@ -229,7 +240,7 @@ function Header(props) {
             value={tab}
             onChange={handleTabChange}
             TabIndicatorProps={{ sx: { backgroundColor: 'transparent' } }}>
-            {TABS.map(myTab => (
+            {memoizedTabs.map(myTab => (
                 <Tab
                     key={myTab.name}
                     className={styles.tab}

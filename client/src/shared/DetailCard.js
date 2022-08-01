@@ -37,7 +37,7 @@ function DetailCard(props) {
             elevation={0}
             className={styles.card}>
             <CardMedia
-                image={restaurant.image}
+                image={`http://localhost:9000/${restaurant.image}`}
                 alt={restaurant.name}
                 height='240'
                 component='img' />
