@@ -130,13 +130,15 @@ app.delete('/restaurants/:id/reviews/:reviewId',
 // USER
 
 app.post('/register',
-    validatePerson,
     userAlreadyExists,
+    imageUpload.single('image'),
+    validatePerson,
     catchAsync(async (req, res) => {
 
-        const { username, email, password, image } = req.body;
+        const { username, email, password } = req.body;
         const hashedPassword = await bcrypt.hash(password, 12);
-        const user = new User({ username, email, password: hashedPassword, image });
+        const user = new User({ username, email, password: hashedPassword });
+        user.image = req.file.path;
         await user.save();
 
         const token = jwt.sign(
@@ -156,8 +158,8 @@ app.post('/register',
     }));
 
 app.post('/login',
-    validateUser,
     userExists,
+    validateUser,
     catchAsync(async (req, res) => {
 
         const user = await User.findOne({ username: req.body.username });

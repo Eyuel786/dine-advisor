@@ -36,7 +36,7 @@ module.exports.validateRestaurant = (req, res, next) => {
 }
 
 module.exports.validatePerson = (req, res, next) => {
-    const requireds = ['username', 'email', 'password', 'image'];
+    const requireds = ['username', 'email', 'password'];
     const { username, email, password } = req.body;
 
     let errorMessage = checkRequired(req.body, requireds);

@@ -150,10 +150,10 @@ function RestaurantForm(props) {
 
     return (
         <Box className={styles.background}>
-            <Grid container justifyContent='space-around'>
-                <Grid item>
-                    <Box sx={{ width: '25rem' }}>
-                        <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
+                <Grid container spacing={14} justifyContent='center'>
+                    <Grid item>
+                        <Box sx={{ width: '25rem' }}>
                             <Typography
                                 variant='h4'
                                 sx={{ mb: 2 }}>
@@ -228,20 +228,21 @@ function RestaurantForm(props) {
                                 disabled={!formIsValid}>
                                 Submit
                             </Button>
-                        </form>
-                    </Box>
+
+                        </Box>
+                    </Grid>
+                    <Grid item alignSelf='center'>
+                        <Typography
+                            variant='h4'
+                            sx={{ mb: 2, mt: 3 }}>
+                            Image
+                        </Typography>
+                        <ImageUpload
+                            imgPreviewUrl={imgPreviewUrl}
+                            handleImgChange={handleImgChange} />
+                    </Grid>
                 </Grid>
-                <Grid item alignSelf='center'>
-                    <Typography
-                        variant='h4'
-                        sx={{ mb: 2, mt: 3 }}>
-                        Image
-                    </Typography>
-                    <ImageUpload
-                        imgPreviewUrl={imgPreviewUrl}
-                        handleImgChange={handleImgChange} />
-                </Grid>
-            </Grid>
+            </form>
         </Box>
     );
 }

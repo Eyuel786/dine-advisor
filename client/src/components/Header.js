@@ -114,7 +114,7 @@ function Header(props) {
     const { token, image, username } = props;
 
     const memoizedTabs = useMemo(() => {
-        const TABS = [
+        const tabs = [
             { name: 'Home', route: '/home' },
             { name: 'Restaurants', route: '/restaurants' },
             { name: 'About Us', route: '/about' },
@@ -122,13 +122,13 @@ function Header(props) {
         ];
 
         if (token) {
-            TABS.splice(2, 0, {
+            tabs.splice(2, 0, {
                 name: 'Add Restaurant',
                 route: '/restaurants/new'
             });
         }
 
-        return TABS;
+        return tabs;
     }, [token]);
 
     const [tab, setTab] = useState(false);
@@ -266,7 +266,7 @@ function Header(props) {
                 onClick={handleMenuOpen}
                 disableRipple>
                 <Avatar
-                    src={image}
+                    src={`http://localhost:9000/${image}`}
                     alt={username}>
                     {username.slice(0, 1)}
                 </Avatar>

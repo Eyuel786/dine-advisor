@@ -6,11 +6,14 @@ import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles(theme => ({
     imageUpload: {
-        textAlign: 'center'
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     imageBox: {
-        height: '12rem',
-        width: '14rem',
+        height: '8rem',
+        width: '9rem',
         borderWidth: 1,
         borderStyle: 'solid',
         borderColor: theme.palette.grey[500]

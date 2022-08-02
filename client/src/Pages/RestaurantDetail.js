@@ -38,9 +38,9 @@ function RestaurantDetail(props) {
                         userId={userId}
                         restaurant={restaurant}
                         removeRestaurant={removeRestaurant} />
+                    {userId && <AddReview id={id} />}
                 </Grid>
                 <Grid item>
-                    {userId && <AddReview id={id} />}
                     <Reviews
                         restaurant={restaurant}
                         userId={userId} />

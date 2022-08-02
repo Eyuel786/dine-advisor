@@ -86,7 +86,7 @@ function RestaurantsList() {
                             </Typography>
                             <Typography
                                 variant='subtitle1'>
-                                0 reviews
+                                {`${r.reviews.length} reviews`}
                             </Typography>
                             <Divider />
                             <Typography

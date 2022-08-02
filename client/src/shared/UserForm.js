@@ -1,13 +1,15 @@
 import React from 'react';
-import { Box, Button, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Grid, Stack, TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useInputState } from '../hooks/useInputState';
 import {
-    validateUsername, validateEmail, validateImage,
+    validateUsername, validateEmail,
     validatePassword, validatePassword2
 } from '../validators/validateUser';
+import { useImgState } from '../hooks/useImgState';
+import ImageUpload from '../components/ImageUpload';
 
 const useStyles = makeStyles(theme => ({
     background: {
@@ -58,16 +60,6 @@ function UserForm(props) {
     } = useInputState('', validateUsername);
 
     const {
-        enteredValue: image,
-        inputIsValid: imageIsValid,
-        inputHasError: imageHasError,
-        errorMessage: imageErrorMessage,
-        handleChange: handleImageChange,
-        handleBlur: handleImageBlur,
-        reset: resetImage
-    } = useInputState('', validateImage);
-
-    const {
         enteredValue: email,
         inputIsValid: emailIsValid,
         inputHasError: emailHasError,
@@ -97,11 +89,15 @@ function UserForm(props) {
         reset: resetPassword2
     } = useInputState('', validatePassword2, { value2: password });
 
+    const [imgState, handleImgChange, resetImg] = useImgState();
+
+    const { imgFile, imgPreviewUrl, imgIsValid } = imgState;
+
     let formIsValid;
     if (isLoggingIn) {
         formIsValid = usernameIsValid && passwordIsValid;
     } else {
-        formIsValid = usernameIsValid && imageIsValid
+        formIsValid = usernameIsValid && imgIsValid
             && emailIsValid && passwordIsValid && password2IsValid
     }
 
@@ -109,7 +105,7 @@ function UserForm(props) {
         resetUsername();
         resetPassword();
         if (!isLoggingIn) {
-            resetImage();
+            resetImg();
             resetEmail();
             resetPassword2();
         }
@@ -126,7 +122,7 @@ function UserForm(props) {
         if (isLoggingIn) {
             login({ username, password });
         } else {
-            register({ username, email, password, image });
+            register({ username, email, password, image: imgFile });
         }
 
         clearForm();
@@ -142,77 +138,78 @@ function UserForm(props) {
                 gutterBottom>
                 {`Welcome ${isLoggingIn ? 'Back' : ''}`}
             </Typography>
-            <Box
-                className={styles.box}>
-                <form onSubmit={handleSubmit}>
-                    <Stack spacing={2}>
-                        <TextField
-                            placeholder='Username'
-                            value={username}
-                            onChange={handleUsernameChange}
-                            onBlur={handleUsernameBlur}
-                            error={usernameHasError}
-                            helperText={usernameHasError && usernameErrorMessage} />
-                        {!isLoggingIn &&
-                            <TextField
-                                placeholder='Image'
-                                value={image}
-                                onChange={handleImageChange}
-                                onBlur={handleImageBlur}
-                                error={imageHasError}
-                                helperText={imageHasError && imageErrorMessage} />}
-                        {!isLoggingIn &&
-                            <TextField
-                                placeholder='Email'
-                                value={email}
-                                onChange={handleEmailChange}
-                                onBlur={handleEmailBlur}
-                                error={emailHasError}
-                                helperText={emailHasError && emailErrorMessage} />}
-                        <TextField
-                            placeholder='Password'
-                            type='password'
-                            value={password}
-                            onChange={handlePasswordChange}
-                            onBlur={handlePasswordBlur}
-                            error={passwordHasError}
-                            helperText={passwordHasError && passwordErrorMessage} />
-                        {!isLoggingIn &&
-                            <TextField
-                                placeholder='Confirm Password'
-                                type='password'
-                                value={password2}
-                                onChange={handlePassword2Change}
-                                onBlur={handlePassword2Blur}
-                                error={password2HasError}
-                                helperText={password2HasError && password2ErrorMessage} />}
-                        <Button
-                            className={styles.submitBtn}
-                            type='submit'>
-                            {isLoggingIn ? 'Sign in' : 'Sign up'}
-                        </Button>
-                    </Stack>
-                </form>
-                <Box sx={{ textAlign: 'center' }}>
-                    <Typography
-                        className={styles.qText}
-                        variant='body2'>
-                        {isLoggingIn ? 'Don\'t have an account?' :
-                            'Already have an account?'}
-                    </Typography>
-                    {isLoggingIn && <Link
-                        className={styles.link}
-                        to='/signup'>
-                        Sign up
-                    </Link>}
-                    {!isLoggingIn && <Link
-                        className={styles.link}
-                        to='/signin'>
-                        Sign in
-                    </Link>}
-                </Box>
+            <Grid container spacing={14} justifyContent='center'>
+                <Grid item>
+                    <Box
+                        className={styles.box}>
+                        <form onSubmit={handleSubmit}>
+                            <Stack spacing={2}>
+                                <TextField
+                                    placeholder='Username'
+                                    value={username}
+                                    onChange={handleUsernameChange}
+                                    onBlur={handleUsernameBlur}
+                                    error={usernameHasError}
+                                    helperText={usernameHasError && usernameErrorMessage} />
+                                {!isLoggingIn &&
+                                    <TextField
+                                        placeholder='Email'
+                                        value={email}
+                                        onChange={handleEmailChange}
+                                        onBlur={handleEmailBlur}
+                                        error={emailHasError}
+                                        helperText={emailHasError && emailErrorMessage} />}
+                                <TextField
+                                    placeholder='Password'
+                                    type='password'
+                                    value={password}
+                                    onChange={handlePasswordChange}
+                                    onBlur={handlePasswordBlur}
+                                    error={passwordHasError}
+                                    helperText={passwordHasError && passwordErrorMessage} />
+                                {!isLoggingIn &&
+                                    <TextField
+                                        placeholder='Confirm Password'
+                                        type='password'
+                                        value={password2}
+                                        onChange={handlePassword2Change}
+                                        onBlur={handlePassword2Blur}
+                                        error={password2HasError}
+                                        helperText={password2HasError && password2ErrorMessage} />}
+                                <Button
+                                    className={styles.submitBtn}
+                                    type='submit'>
+                                    {isLoggingIn ? 'Sign in' : 'Sign up'}
+                                </Button>
+                            </Stack>
+                        </form>
+                    </Box>
+                </Grid>
+                {!isLoggingIn && <Grid item alignSelf='center'>
+                    <ImageUpload
+                        imgPreviewUrl={imgPreviewUrl}
+                        handleImgChange={handleImgChange} />
+                </Grid>}
+            </Grid>
+            <Box sx={{ textAlign: 'center' }}>
+                <Typography
+                    className={styles.qText}
+                    variant='body2'>
+                    {isLoggingIn ? 'Don\'t have an account?' :
+                        'Already have an account?'}
+                </Typography>
+                {isLoggingIn && <Link
+                    className={styles.link}
+                    to='/signup'>
+                    Sign up
+                </Link>}
+                {!isLoggingIn && <Link
+                    className={styles.link}
+                    to='/signin'>
+                    Sign in
+                </Link>}
             </Box>
-        </Box>
+        </Box >
     );
 }
 

@@ -29,12 +29,17 @@ export const authActions = authSlice.actions;
 export const sendSignUpRequest = userData => {
     return async dispatch => {
         try {
+            const { username, email, image, password } = userData;
+
+            const formData = new FormData();
+            formData.append('username', username);
+            formData.append('email', email);
+            formData.append('image', image);
+            formData.append('password', password);
+
             const response = await fetch('http://localhost:9000/register', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(userData)
+                body: formData
             });
 
             if (!response.ok) throw new Error('Error sending sign up request');

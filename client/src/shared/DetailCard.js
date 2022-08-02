@@ -9,7 +9,8 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
     card: {
-        width: '24rem'
+        width: '24rem',
+        marginBottom: '2rem'
     },
     button: {
         '&.MuiButton-root': {

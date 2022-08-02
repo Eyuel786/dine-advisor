@@ -48,7 +48,7 @@ function Reviews(props) {
                                                 height: 56,
                                                 marginBottom: '0.5rem'
                                             }}
-                                            src={r.creator.image}
+                                            src={`http://localhost:9000/${r.creator.image}`}
                                             alt={r.creator.username} />
                                         <Typography
                                             variant='h4'
