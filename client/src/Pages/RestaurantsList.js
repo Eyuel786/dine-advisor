@@ -82,7 +82,7 @@ function RestaurantsList() {
                             </Link>
                             <Typography
                                 variant='subtitle1'>
-                                {`${r.city}, ${r.state}`}
+                                {r.location}
                             </Typography>
                             <Typography
                                 variant='subtitle1'>

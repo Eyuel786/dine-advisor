@@ -16,28 +16,9 @@ export const validateDescription = description => {
     return errorMessage;
 }
 
-export const validateCity = city => {
-    let errorMessage = checkRequired('City', city);
+export const validateLocation = location => {
+    let errorMessage = checkRequired('Location', location);
     if (errorMessage) return errorMessage;
-
-    errorMessage = checkLength('City', city, 3, 30);
-    return errorMessage;
-}
-
-export const validateState = state => {
-    let errorMessage = checkRequired('State', state);
-    if (errorMessage) return errorMessage;
-
-    errorMessage = checkLength('State', state, 3, 30);
-    return errorMessage;
-}
-
-export const validateCountry = country => {
-    let errorMessage = checkRequired('Country', country);
-    if (errorMessage) return errorMessage;
-
-    errorMessage = checkLength('Country', country, 3, 30);
-    return errorMessage;
 }
 
 export const validateImage = image => {

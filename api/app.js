@@ -8,7 +8,10 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
+const mbxGeocoder = require('@mapbox/mapbox-sdk/services/geocoding');
 const app = express();
+const mbxToken = process.env.MAPBOX_TOKEN;
+const geocoder = mbxGeocoder({ accessToken: mbxToken });
 
 const Restaurant = require('./models/Restaurant');
 const Review = require('./models/Review');
@@ -44,10 +47,16 @@ app.post('/restaurants',
     validateRestaurant,
     catchAsync(async (req, res, err) => {
 
-        const { name, description, city, state, country, email } = req.body;
-        const restaurant = new Restaurant({ name, description, city, state, country, email });
+        const { name, description, location, email } = req.body;
+        const geoData = await geocoder.forwardGeocode({
+            query: location,
+            limit: 1
+        }).send();
+
+        const restaurant = new Restaurant({ name, description, location, email });
         restaurant.creator = req.currentUser;
         restaurant.image = req.file.path;
+        restaurant.geometry = geoData.body.features[0].geometry;
         await restaurant.save();
         res.status(201).json(restaurant.toObject({ getters: true }));
     }));
@@ -69,12 +78,20 @@ app.patch('/restaurants/:id',
     validateRestaurant,
     catchAsync(async (req, res) => {
 
-        const { name, description, city, state, country, email } = req.body;
+        const { name, description, location, email } = req.body;
+        const geoData = await geocoder.forwardGeocode({
+            query: location,
+            limit: 1
+        }).send();
+
         const restaurant = await Restaurant.findByIdAndUpdate(
             req.params.id,
-            { name, description, city, state, country, email },
+            { name, description, location, email },
             { new: true, runValidators: true })
             .populate({ path: 'reviews', populate: { path: 'creator', model: 'User' } });
+
+        restaurant.geometry = geoData.body.features[0].geometry;
+        await restaurant.save();
 
         if (req.file) {
             fs.unlink(restaurant.image, () => { });

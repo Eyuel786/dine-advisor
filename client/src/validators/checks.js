@@ -29,7 +29,7 @@ export const checkEmail = value => {
 export const checkPassword = value => {
     const trimmedValue = value.trim();
 
-    const passwordIsValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(trimmedValue);
+    const passwordIsValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/.test(trimmedValue);
 
     if (!passwordIsValid) return 'Password is not valid';
 

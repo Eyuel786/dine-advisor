@@ -12,6 +12,7 @@ import { removeRestaurantFromDB } from '../store';
 import DetailCard from '../shared/DetailCard';
 import AddReview from '../components/AddReview';
 import Reviews from '../components/Reviews';
+import ShowMap from '../components/ShowMap';
 
 
 const useStyles = makeStyles(theme => ({
@@ -41,6 +42,7 @@ function RestaurantDetail(props) {
                     {userId && <AddReview id={id} />}
                 </Grid>
                 <Grid item>
+                    <ShowMap geometry={restaurant.geometry} />
                     <Reviews
                         restaurant={restaurant}
                         userId={userId} />

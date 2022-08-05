@@ -4,8 +4,7 @@ import { Box, Button, Grid, Stack, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import {
-    validateName, validateDescription, validateCity, validateState,
-    validateCountry, validateEmail
+    validateName, validateDescription, validateEmail, validateLocation
 } from '../validators/validateRestaurant';
 import { useInputState } from '../hooks/useInputState';
 import ImageUpload from '../components/ImageUpload';
@@ -59,34 +58,14 @@ function RestaurantForm(props) {
     } = useInputState(restaurant && restaurant.description, validateDescription);
 
     const {
-        enteredValue: city,
-        inputIsValid: cityIsValid,
-        inputHasError: cityHasError,
-        errorMessage: cityErrorMessage,
-        handleChange: handleCityChange,
-        handleBlur: handleCityBlur,
-        reset: resetCity
-    } = useInputState(restaurant && restaurant.city, validateCity);
-
-    const {
-        enteredValue: state,
-        inputIsValid: stateIsValid,
-        inputHasError: stateHasError,
-        errorMessage: stateErrorMessage,
-        handleChange: handleStateChange,
-        handleBlur: handleStateBlur,
-        reset: resetState
-    } = useInputState(restaurant && restaurant.state, validateState);
-
-    const {
-        enteredValue: country,
-        inputIsValid: countryIsValid,
-        inputHasError: countryHasError,
-        errorMessage: countryErrorMessage,
-        handleChange: handleCountryChange,
-        handleBlur: handleCountryBlur,
-        reset: resetCountry
-    } = useInputState(restaurant && restaurant.country, validateCountry);
+        enteredValue: location,
+        inputIsValid: locationIsValid,
+        inputHasError: locationHasError,
+        errorMessage: locationErrorMessage,
+        handleChange: handleLocationChange,
+        handleBlur: handleLocationBlur,
+        reset: resetLocation
+    } = useInputState(restaurant && restaurant.location, validateLocation);
 
     const {
         enteredValue: email,
@@ -104,15 +83,13 @@ function RestaurantForm(props) {
 
     const { imgFile, imgPreviewUrl, imgIsValid } = imgState;
 
-    const formIsValid = nameIsValid && descriptionIsValid && cityIsValid
-        && stateIsValid && countryIsValid && imgIsValid && emailIsValid;
+    const formIsValid = nameIsValid && descriptionIsValid && locationIsValid
+        && imgIsValid && emailIsValid;
 
     const clearForm = () => {
         resetName();
         resetDescription();
-        resetCity();
-        resetState();
-        resetCountry();
+        resetLocation();
         resetImg();
         resetEmail();
     }
@@ -122,9 +99,7 @@ function RestaurantForm(props) {
 
         handleNameBlur();
         handleDescriptionBlur();
-        handleCityBlur();
-        handleStateBlur();
-        handleCountryBlur();
+        handleLocationBlur();
         handleEmailBlur();
 
         if (!formIsValid) {
@@ -134,13 +109,13 @@ function RestaurantForm(props) {
 
         if (isEditing) {
             updateRestaurant({
-                ...restaurant, name, description, city,
-                state, country, image: imgFile, email
+                ...restaurant, name, description, location,
+                image: imgFile, email
             });
         } else {
             addNewRestaurant({
-                name, description, city,
-                state, country, image: imgFile, email
+                name, description, location,
+                image: imgFile, email
             });
         }
         navigate('/restaurants');
@@ -184,30 +159,15 @@ function RestaurantForm(props) {
                                 Address
                             </Typography>
 
-                            {/*Incorporate a map to specify location*/}
-                            <Stack spacing={2}>
-                                <TextField
-                                    placeholder='City'
-                                    value={city}
-                                    onChange={handleCityChange}
-                                    onBlur={handleCityBlur}
-                                    error={cityHasError}
-                                    helperText={cityHasError && cityErrorMessage} />
-                                <TextField
-                                    placeholder='State'
-                                    value={state}
-                                    onChange={handleStateChange}
-                                    onBlur={handleStateBlur}
-                                    error={stateHasError}
-                                    helperText={stateHasError && stateErrorMessage} />
-                                <TextField
-                                    placeholder='Country'
-                                    value={country}
-                                    onChange={handleCountryChange}
-                                    onBlur={handleCountryBlur}
-                                    error={countryHasError}
-                                    helperText={countryHasError && countryErrorMessage} />
-                            </Stack>
+                            <TextField
+                                placeholder='Location'
+                                value={location}
+                                onChange={handleLocationChange}
+                                onBlur={handleLocationBlur}
+                                error={locationHasError}
+                                helperText={locationHasError && locationErrorMessage}
+                                fullWidth />
+
                             <Typography
                                 variant='h4'
                                 sx={{ mb: 2, mt: 3 }}>

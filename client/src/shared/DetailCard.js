@@ -57,8 +57,7 @@ function DetailCard(props) {
                 <Divider />
                 <Typography
                     sx={{ padding: '4px 0' }}>
-                    {`${restaurant.state}, 
-                                ${restaurant.city}`}
+                    {restaurant.location}
                 </Typography>
                 <Divider />
                 <Typography

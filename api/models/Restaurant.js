@@ -9,9 +9,11 @@ const restaurantSchema = new Schema({
     name: String,
     description: String,
     image: String,
-    city: String,
-    state: String,
-    country: String,
+    location: String,
+    geometry: {
+        type: { type: String, enum: ['Point'] },
+        coordinates: [String]
+    },
     email: String,
     reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
     creator: { type: Schema.Types.ObjectId, ref: 'User' }

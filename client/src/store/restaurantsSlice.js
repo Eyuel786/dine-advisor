@@ -47,17 +47,14 @@ export const sendNewRestaurant = restaurant => {
             const { token } = myState.auth.auth;
 
             const {
-                name, description, image, city,
-                state, country, email
+                name, description, image, location, email
             } = restaurant;
 
             const formData = new FormData();
             formData.append('name', name);
             formData.append('description', description);
             formData.append('image', image);
-            formData.append('city', city);
-            formData.append('state', state);
-            formData.append('country', country);
+            formData.append('location', location);
             formData.append('email', email);
 
             const response = await fetch(url, {
@@ -86,17 +83,14 @@ export const sendUpdatedRestaurant = (id, restaurant) => {
             const { token } = myState.auth.auth;
 
             const {
-                name, description, image, city,
-                state, country, email
+                name, description, image, location, email
             } = restaurant;
 
             const formData = new FormData();
             formData.append('name', name);
             formData.append('description', description);
             formData.append('image', image);
-            formData.append('city', city);
-            formData.append('state', state);
-            formData.append('country', country);
+            formData.append('location', location);
             formData.append('email', email);
 
             const response = await fetch(`${url}/${id}`, {
