@@ -4,26 +4,14 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
-const mbxGeocoder = require('@mapbox/mapbox-sdk/services/geocoding');
 const app = express();
-const mbxToken = process.env.MAPBOX_TOKEN;
-const geocoder = mbxGeocoder({ accessToken: mbxToken });
 
-const Restaurant = require('./models/Restaurant');
-const Review = require('./models/Review');
-const User = require('./models/User');
 const AppError = require('./helpers/AppError');
-const catchAsync = require('./helpers/catchAsync');
-const imageUpload = require('./helpers/imageUpload');
-const {
-    validateRestaurant, validatePerson, validateUser, validateReview,
-    restaurantExists, reviewExists, userExists, userAlreadyExists,
-    isAuthenticated, isAuthor, isReviewAuthor
-} = require('./helpers/middlewares');
+const restaurantsRouters = require('./routers/restaurants.routers');
+const reviewsRouters = require('./routers/reviews.routers');
+const usersRouters = require('./routers/users.routers');
 
 mongoose.connect('mongodb://localhost:27017/dine-advisor-db')
     .then(res => console.log('Database connected'))
@@ -34,168 +22,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads/images', express.static(path.join(__dirname, '/uploads/images')));
 
-
-app.get('/restaurants', catchAsync(async (req, res) => {
-    const restaurants = await Restaurant.find({})
-        .populate({ path: 'reviews', populate: { path: 'creator', model: 'User' } });
-    res.json(restaurants.map(r => r.toObject({ getters: true })));
-}));
-
-app.post('/restaurants',
-    isAuthenticated,
-    imageUpload.single('image'),
-    validateRestaurant,
-    catchAsync(async (req, res, err) => {
-
-        const { name, description, location, email } = req.body;
-        const geoData = await geocoder.forwardGeocode({
-            query: location,
-            limit: 1
-        }).send();
-
-        const restaurant = new Restaurant({ name, description, location, email });
-        restaurant.creator = req.currentUser;
-        restaurant.image = req.file.path;
-        restaurant.geometry = geoData.body.features[0].geometry;
-        await restaurant.save();
-        res.status(201).json(restaurant.toObject({ getters: true }));
-    }));
-
-app.get('/restaurants/:id',
-    restaurantExists,
-    catchAsync(async (req, res) => {
-
-        const restaurant = await Restaurant.findById(req.params.id)
-            .populate({ path: 'reviews', populate: { path: 'creator', model: 'user' } });
-        res.json(restaurant.toObject({ getters: true }));
-    }));
-
-app.patch('/restaurants/:id',
-    isAuthenticated,
-    restaurantExists,
-    isAuthor,
-    imageUpload.single('image'),
-    validateRestaurant,
-    catchAsync(async (req, res) => {
-
-        const { name, description, location, email } = req.body;
-        const geoData = await geocoder.forwardGeocode({
-            query: location,
-            limit: 1
-        }).send();
-
-        const restaurant = await Restaurant.findByIdAndUpdate(
-            req.params.id,
-            { name, description, location, email },
-            { new: true, runValidators: true })
-            .populate({ path: 'reviews', populate: { path: 'creator', model: 'User' } });
-
-        restaurant.geometry = geoData.body.features[0].geometry;
-        await restaurant.save();
-
-        if (req.file) {
-            fs.unlink(restaurant.image, () => { });
-            restaurant.image = req.file.path;
-            await restaurant.save();
-        }
-        res.json(restaurant.toObject({ getters: true }));
-    }));
-
-app.delete('/restaurants/:id',
-    isAuthenticated,
-    restaurantExists,
-    isAuthor,
-    catchAsync(async (req, res) => {
-
-        await Restaurant.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Restaurant deleted' });
-    }));
-
-// REVIEWS
-
-app.post('/restaurants/:id/reviews',
-    isAuthenticated,
-    validateReview,
-    catchAsync(async (req, res) => {
-
-        const restaurant = await Restaurant.findById(req.params.id)
-            .populate({ path: 'reviews', populate: { path: 'creator', model: 'User' } });
-
-        const review = new Review(req.body);
-        review.creator = req.currentUser;
-        restaurant.reviews.push(review);
-        await restaurant.save();
-        await review.save();
-        res.json(restaurant.toObject({ getters: true }));
-    }));
-
-app.delete('/restaurants/:id/reviews/:reviewId',
-    isAuthenticated,
-    reviewExists,
-    isReviewAuthor,
-    catchAsync(async (req, res) => {
-
-        const { id, reviewId } = req.params;
-        const restaurant = await Restaurant.findByIdAndUpdate(id,
-            { $pull: { reviews: reviewId } }, { new: true, runValidators: true })
-            .populate({ path: 'reviews', populate: { path: 'creator', model: 'User' } });
-
-        await Review.findByIdAndDelete(reviewId);
-        res.json(restaurant.toObject({ getters: true }));
-    }));
-
-// USER
-
-app.post('/register',
-    userAlreadyExists,
-    imageUpload.single('image'),
-    validatePerson,
-    catchAsync(async (req, res) => {
-
-        const { username, email, password } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 12);
-        const user = new User({ username, email, password: hashedPassword });
-        user.image = req.file.path;
-        await user.save();
-
-        const token = jwt.sign(
-            { userId: user._id, username: user.username, email: user.email },
-            process.env.JWT_PRIVATE_KEY,
-            { expiresIn: '7d' }
-        );
-
-        res.json({
-            userId: user._id,
-            username: user.username,
-            email: user.email,
-            image: user.image,
-            tokenExpirationDate: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-            token
-        });
-    }));
-
-app.post('/login',
-    userExists,
-    validateUser,
-    catchAsync(async (req, res) => {
-
-        const user = await User.findOne({ username: req.body.username });
-
-        const token = jwt.sign(
-            { userId: user._id, username: user.username, email: user.email },
-            process.env.JWT_PRIVATE_KEY,
-            { expiresIn: '7d' }
-        );
-
-        res.json({
-            userId: user._id,
-            username: user.username,
-            email: user.email,
-            image: user.image,
-            tokenExpirationDate: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-            token
-        });
-    }));
+app.use('/restaurants', restaurantsRouters);
+app.use('/restaurants/:id', reviewsRouters);
+app.use('/', usersRouters);
 
 app.all('*', (req, res, next) => {
     next(new AppError('Resource not found', 400));

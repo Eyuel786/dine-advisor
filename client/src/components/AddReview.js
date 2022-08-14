@@ -84,52 +84,52 @@ function AddReview(props) {
     }
 
     return (
-        <Box className={styles.addReview}>
-
+        <>
             <Typography
-                variant='h4'
-                align='center'
+                variant='h3'
                 className={styles.title}>
                 Write your review
             </Typography>
-            <form onSubmit={handleSubmit}>
-                <Stack spacing={2}>
-                    <Box>
-                        <Typography
-                            component='legend'>
-                            Rating
-                        </Typography>
-                        <Rating
-                            value={rating}
-                            onChange={handleRatingChange} />
-                    </Box>
-                    <TextField
-                        placeholder='Title'
-                        value={title}
-                        onChange={handleTitleChange}
-                        onBlur={handleTitleBlur}
-                        error={titleHasError}
-                        helperText={titleHasError && titleErrorMessage} />
-                    <TextField
-                        placeholder='Comment'
-                        value={comment}
-                        onChange={handleCommentChange}
-                        onBlur={handleCommentBlur}
-                        error={commentHasError}
-                        helperText={commentHasError && commentErrorMessage}
-                        rows={3}
-                        multiline />
-                </Stack>
-                <Button
-                    size='small'
-                    variant='contained'
-                    type='submit'
-                    className={styles.submitBtn}>
-                    Submit
-                </Button>
-            </form>
+            <Box className={styles.addReview}>
 
-        </Box>
+                <form onSubmit={handleSubmit}>
+                    <Stack spacing={2}>
+                        <Box>
+                            <Typography
+                                component='legend'>
+                                Rating
+                            </Typography>
+                            <Rating
+                                value={rating}
+                                onChange={handleRatingChange} />
+                        </Box>
+                        <TextField
+                            placeholder='Title'
+                            value={title}
+                            onChange={handleTitleChange}
+                            onBlur={handleTitleBlur}
+                            error={titleHasError}
+                            helperText={titleHasError && titleErrorMessage} />
+                        <TextField
+                            placeholder='Comment'
+                            value={comment}
+                            onChange={handleCommentChange}
+                            onBlur={handleCommentBlur}
+                            error={commentHasError}
+                            helperText={commentHasError && commentErrorMessage}
+                            rows={3}
+                            multiline />
+                    </Stack>
+                    <Button
+                        size='small'
+                        variant='contained'
+                        type='submit'
+                        className={styles.submitBtn}>
+                        Submit
+                    </Button>
+                </form>
+            </Box>
+        </>
     );
 }
 

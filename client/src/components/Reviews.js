@@ -10,7 +10,8 @@ const useStyles = makeStyles(theme => ({
     background: {
         backgroundColor: '#fff',
         width: '30rem',
-        padding: '0 1rem'
+        padding: '0 1rem',
+        marginBottom: '2rem'
     },
     review: {
         padding: '1rem 0'
@@ -29,7 +30,8 @@ function Reviews(props) {
                 <Typography variant='h3' gutterBottom>Reviews</Typography>}
             <Box className={styles.background}>
                 {restaurant.reviews.map(r => {
-                    const isReviewAuthor = r.creator === userId;
+                    const isReviewAuthor = r.creator.id === userId;
+
                     return (
                         <Box key={r.id}>
                             <Box

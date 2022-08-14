@@ -33,19 +33,34 @@ function RestaurantDetail(props) {
 
     return (
         <Box className={styles.background}>
-            <Grid container justifyContent='space-between'>
+            <Grid
+                container
+                direction='column'
+                justifyContent='space-between'>
                 <Grid item>
-                    <DetailCard
-                        userId={userId}
-                        restaurant={restaurant}
-                        removeRestaurant={removeRestaurant} />
-                    {userId && <AddReview id={id} />}
+                    <Grid container justifyContent='space-between'>
+                        <Grid item>
+                            <DetailCard
+                                userId={userId}
+                                restaurant={restaurant}
+                                removeRestaurant={removeRestaurant} />
+                        </Grid>
+                        <Grid item>
+                            <ShowMap geometry={restaurant.geometry} />
+                        </Grid>
+                    </Grid>
                 </Grid>
                 <Grid item>
-                    <ShowMap geometry={restaurant.geometry} />
-                    <Reviews
-                        restaurant={restaurant}
-                        userId={userId} />
+                    <Grid container justifyContent='space-between'>
+                        <Grid item>
+                            <Reviews
+                                restaurant={restaurant}
+                                userId={userId} />
+                        </Grid>
+                        <Grid item>
+                            {userId && <AddReview id={id} />}
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Grid>
         </Box>
